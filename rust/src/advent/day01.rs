@@ -1,8 +1,5 @@
-
-// use crate::utils::files::
-
-use std::fs;
 use crate::utils::errors::Error;
+use crate::utils::files::{problem_input_path, read_file_split_whitespace};
 
 fn fuel_cost(weight: f32) -> u32 {
     ((weight / 3.0) as u32).checked_sub(2).unwrap_or(0)
@@ -19,15 +16,15 @@ fn recursive_cost(weight: f32) -> u32 {
 }
 
 pub fn part_one() -> Result<u32, Error> {
-    let content = fs::read_to_string("../advent_problems/day01/input")?;
-    let numbers: Result<Vec<f32>, _> = content.split_whitespace().map(str::parse::<f32>).collect();
+    let input_path = problem_input_path(1, None);
+    let numbers = read_file_split_whitespace(&input_path);
     let sum = numbers?.into_iter().map(fuel_cost).sum();
     Ok(sum)
 }
 
 pub fn part_two() -> Result<u32, Error> {
-    let content = fs::read_to_string("../advent_problems/day01/input")?;
-    let numbers: Result<Vec<f32>, _> = content.split_whitespace().map(str::parse::<f32>).collect();
+    let input_path = problem_input_path(1, None);
+    let numbers = read_file_split_whitespace(&input_path);
     let sum = numbers?.into_iter().map(recursive_cost).sum();
     Ok(sum)
 }

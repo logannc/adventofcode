@@ -3,6 +3,8 @@ pub enum Error {
     IoError(std::io::Error),
     ParseIntError(std::num::ParseIntError),
     ParseFloatError(std::num::ParseFloatError),
+    NoSolutionFound,
+    Infallible,
 }
 
 impl From<std::io::Error> for Error {
@@ -20,5 +22,11 @@ impl From<std::num::ParseIntError> for Error {
 impl From<std::num::ParseFloatError> for Error {
     fn from(err: std::num::ParseFloatError) -> Error {
         Self::ParseFloatError(err)
+    }
+}
+
+impl From<std::convert::Infallible> for Error {
+    fn from(_err: std::convert::Infallible) -> Error {
+        Self::Infallible
     }
 }

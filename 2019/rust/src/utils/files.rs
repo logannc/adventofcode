@@ -19,3 +19,13 @@ where
     let parsed: Result<Vec<T>, _> = content.split_whitespace().map(str::parse::<T>).collect();
     parsed.map_err(|e| e.into())
 }
+
+pub fn read_file_split_on<T: std::str::FromStr>(file: &Path, pattern: &str) -> Result<Vec<T>, Error>
+where
+    Error: std::convert::From<<T as std::str::FromStr>::Err>,
+{
+    let content = fs::read_to_string(file)?;
+    let content = content.trim();
+    let parsed: Result<Vec<T>, _> = content.split(pattern).map(str::parse::<T>).collect();
+    parsed.map_err(|e| e.into())
+}

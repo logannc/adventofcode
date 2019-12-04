@@ -18,5 +18,13 @@ fn main() -> Result<(), utils::errors::Error> {
         "Day 2: Part Two: Gravity Assist: {}",
         advent::day02::part_two()? // 2505
     );
+    println!(
+        "Day 3: Part One: Crossed Wires: {}",
+        advent::day03::part_one()? // 709
+    );
+    println!(
+        "Day 3: Part Two: Wire Length: {}",
+        advent::day03::part_two()? // 
+    );
     Ok(())
 }

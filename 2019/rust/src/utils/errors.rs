@@ -3,6 +3,7 @@ pub enum Error {
     IoError(std::io::Error),
     ParseIntError(std::num::ParseIntError),
     ParseFloatError(std::num::ParseFloatError),
+    DirectionParseError(String),
     NoSolutionFound,
     Infallible,
 }

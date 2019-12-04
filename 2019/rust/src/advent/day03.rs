@@ -220,7 +220,7 @@ pub fn part_one() -> Result<u32, Error> {
     }
     intersections.remove(&Point::default());
     // we've defined min on `Point` as distance from origin, so let's grab it
-    match intersections.iter().min() {
+    match intersections.iter().next() {
         Some(point) => Ok(point.from_origin()),
         None => Err(Error::NoSolutionFound),
     }

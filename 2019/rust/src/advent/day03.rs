@@ -184,7 +184,6 @@ impl SparseLineBoard {
         let mut traveled = 0;
         for segment in self.lines.iter() {
             if let Some(i) = segment.intersects(line) {
-                dbg!(line, segment, i);
                 let partial = LineSegment{start: segment.start, end: i}.length();
                 return Some((traveled + partial, i));
             }
@@ -240,7 +239,6 @@ pub fn part_two() -> Result<u32, Error> {
         if let Some((other_traveled, i)) = line_board.first_intersection(&line) {
             if i != Point::default() {
                 let partial = LineSegment{ start: cursor, end: i}.length();
-                dbg!(line, i, cursor, other_traveled, traveled, partial);
                 intersection_latencies.push(other_traveled + traveled + partial);
             }
         }

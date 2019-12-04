@@ -24,7 +24,15 @@ fn main() -> Result<(), utils::errors::Error> {
     );
     println!(
         "Day 3: Part Two: Wire Length: {}",
-        advent::day03::part_two()? // 
+        advent::day03::part_two()? // 13836
+    );
+    println!(
+        "Day 4: Part One: Secure Container: {}",
+        advent::day04::part_one()? // 2090
+    );
+    println!(
+        "Day 4: Part One: Secure Container Fewer Dupes: {}",
+        advent::day04::part_two()? // 1419
     );
     Ok(())
 }

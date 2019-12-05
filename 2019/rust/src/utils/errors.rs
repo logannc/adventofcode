@@ -6,6 +6,7 @@ pub enum Error {
     DirectionParseError(String),
     NoSolutionFound,
     Infallible,
+    BadOpcode(String),
 }
 
 impl From<std::io::Error> for Error {

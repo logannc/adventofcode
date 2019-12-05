@@ -110,14 +110,14 @@ pub fn emulate_computer(tape: &mut Vec<i32>, inputs: &Vec<i32>) -> Result<Vec<Va
             }
             OpCode::JumpIfTrue(p1, p2) => {
                 if p1.get_value(&tape) != 0 {
-                    ip = p2.get_value(&tape) as usize;
+                    ip = usize::try_from(p2.get_value(&tape))?;
                 } else {
                     ip += 3
                 }
             }
             OpCode::JumpIfFalse(p1, p2) => {
                 if p1.get_value(&tape) == 0 {
-                    ip = p2.get_value(&tape) as usize;
+                    ip = usize::try_from(p2.get_value(&tape))?;
                 } else {
                     ip += 3
                 }

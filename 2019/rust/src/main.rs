@@ -31,8 +31,16 @@ fn main() -> Result<(), utils::errors::Error> {
         advent::day04::part_one()? // 2090
     );
     println!(
-        "Day 4: Part One: Secure Container Fewer Dupes: {}",
+        "Day 4: Part Two: Secure Container Fewer Dupes: {}",
         advent::day04::part_two()? // 1419
+    );
+    println!(
+        "Day 5: Part One: Emulator Enhancement: {}",
+        advent::day05::part_one()? // 16434972
+    );
+    println!(
+        "Day 5: Part Two: Emulator Enhancement: {}",
+        advent::day05::part_two()? // 16694270
     );
     Ok(())
 }

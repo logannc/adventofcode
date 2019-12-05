@@ -13,3 +13,15 @@ pub fn part_one() -> Result<i32, Error> {
     dbg!(outputs, diagnostic_code);
     Err(Error::NoSolutionFound)
 }
+
+pub fn part_two() -> Result<i32, Error> {
+    let input_path = problem_input_path(5, None);
+    let mut tape = read_file_split_on(&input_path, ",")?;
+    let mut outputs = emulate_computer(&mut tape, &vec![5])?;
+    let diagnostic_code = outputs.split_off(outputs.len()-1)[0];
+    if outputs.iter().all(|c| *c == 0) {
+        return Ok(diagnostic_code);
+    }
+    dbg!(outputs, diagnostic_code);
+    Err(Error::NoSolutionFound)
+}

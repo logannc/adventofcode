@@ -85,7 +85,7 @@ fn decode_opcode(tape: &Vec<Value>, ip: Address) -> Result<OpCode, Error> {
     }
 }
 
-pub fn emulate_computer(tape: &mut Vec<i32>, inputs: &Vec<i32>) -> Result<Vec<Value>, Error> {
+pub fn emulate_computer(tape: &mut Vec<Value>, inputs: &Vec<Value>) -> Result<Vec<Value>, Error> {
     let mut inputs = inputs.into_iter();
     let mut outputs = Vec::new();
     let mut ip = 0;

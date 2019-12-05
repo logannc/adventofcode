@@ -1,5 +1,7 @@
 use crate::utils::errors::Error;
 
+use std::convert::TryFrom;
+
 type Address = usize;
 type Value = i32;
 
@@ -29,10 +31,10 @@ enum OpCode {
     Halt,
 }
 
-fn param(tape: &Vec<Value>, pos: usize, mode: Option<&Address>) -> Parameter {
+fn param(tape: &Vec<Value>, pos: usize, mode: Option<&Address>) -> Result<Parameter, Error> {
     match mode.unwrap_or(&0) {
-        0 => Parameter::Position(tape[pos] as usize),
-        1 => Parameter::Immediate(tape[pos]),
+        0 => Ok(Parameter::Position(usize::try_from(tape[pos])?)),
+        1 => Ok(Parameter::Immediate(tape[pos])),
         _ => panic!("unknown parameter mode"),
     }
 }
@@ -49,34 +51,34 @@ fn decode_opcode(tape: &Vec<Value>, ip: Address) -> Result<OpCode, Error> {
         .collect();
     match opcode.as_ref() {
         "01" => Ok(OpCode::Add(
-            param(&tape, ip + 1, modes.get(0)),
-            param(&tape, ip + 2, modes.get(1)),
-            tape[ip + 3] as usize,
+            param(&tape, ip + 1, modes.get(0))?,
+            param(&tape, ip + 2, modes.get(1))?,
+            usize::try_from(tape[ip + 3])?,
         )),
         "02" => Ok(OpCode::Mul(
-            param(&tape, ip + 1, modes.get(0)),
-            param(&tape, ip + 2, modes.get(1)),
-            tape[ip + 3] as usize,
+            param(&tape, ip + 1, modes.get(0))?,
+            param(&tape, ip + 2, modes.get(1))?,
+            usize::try_from(tape[ip + 3])?,
         )),
-        "03" => Ok(OpCode::Input(tape[ip + 1] as usize)),
-        "04" => Ok(OpCode::Output(param(&tape, ip + 1, modes.get(0)))),
+        "03" => Ok(OpCode::Input(usize::try_from(tape[ip + 1])?)),
+        "04" => Ok(OpCode::Output(param(&tape, ip + 1, modes.get(0))?)),
         "05" => Ok(OpCode::JumpIfTrue(
-            param(&tape, ip + 1, modes.get(0)),
-            param(&tape, ip + 2, modes.get(1)),
+            param(&tape, ip + 1, modes.get(0))?,
+            param(&tape, ip + 2, modes.get(1))?,
         )),
         "06" => Ok(OpCode::JumpIfFalse(
-            param(&tape, ip + 1, modes.get(0)),
-            param(&tape, ip + 2, modes.get(1)),
+            param(&tape, ip + 1, modes.get(0))?,
+            param(&tape, ip + 2, modes.get(1))?,
         )),
         "07" => Ok(OpCode::LessThan(
-            param(&tape, ip + 1, modes.get(0)),
-            param(&tape, ip + 2, modes.get(1)),
-            tape[ip + 3] as usize,
+            param(&tape, ip + 1, modes.get(0))?,
+            param(&tape, ip + 2, modes.get(1))?,
+            usize::try_from(tape[ip + 3])?,
         )),
         "08" => Ok(OpCode::Equal(
-            param(&tape, ip + 1, modes.get(0)),
-            param(&tape, ip + 2, modes.get(1)),
-            tape[ip + 3] as usize,
+            param(&tape, ip + 1, modes.get(0))?,
+            param(&tape, ip + 2, modes.get(1))?,
+            usize::try_from(tape[ip + 3])?,
         )),
         "99" => Ok(OpCode::Halt),
         _ => Err(Error::BadOpcode(instruction)),

@@ -7,11 +7,18 @@ pub enum Error {
     NoSolutionFound,
     Infallible,
     BadOpcode(String),
+    TryFromIntError(std::num::TryFromIntError),
 }
 
 impl From<std::io::Error> for Error {
     fn from(err: std::io::Error) -> Error {
         Self::IoError(err)
+    }
+}
+
+impl From<std::num::TryFromIntError> for Error {
+    fn from(err: std::num::TryFromIntError) -> Error {
+        Self::TryFromIntError(err)
     }
 }
 

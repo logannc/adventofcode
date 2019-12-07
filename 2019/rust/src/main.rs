@@ -42,5 +42,13 @@ fn main() -> Result<(), utils::errors::Error> {
         "Day 5: Part Two: Emulator Enhancement: {}",
         advent::day05::part_two()? // 16694270
     );
+    println!(
+        "Day 6: Part One: Orbits Dont Work This Way: {}",
+        advent::day06::part_one()? // 278744
+    );
+    println!(
+        "Day 6: Part Two: I am a Steely-eyed Missile Man: {}",
+        advent::day06::part_two()? // 475
+    );
     Ok(())
 }

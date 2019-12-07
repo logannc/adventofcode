@@ -100,3 +100,41 @@ pub fn part_one() -> Result<u32, Error> {
     }
     Err(Error::NoSolutionFound)
 }
+
+pub fn part_two() -> Result<u32, Error> {
+    let input_path = problem_input_path(6, None);
+    let orbit_pairs: Vec<Orbit> = read_file_split_whitespace(&input_path)?;
+    let mut connections: HashMap<&str, HashSet<&str>> = HashMap::new();
+    for orbit in orbit_pairs.iter() {
+        connections
+            .entry(&orbit.center)
+            .or_default()
+            .insert(&orbit.satellite);
+        connections
+            .entry(&orbit.satellite)
+            .or_default()
+            .insert(&orbit.center);
+    }
+    let mut frontier = VecDeque::new();
+    frontier.push_front(("YOU", 0));
+    let mut explored = HashSet::new();
+    while !frontier.is_empty() {
+        let (visit, traveled) = frontier.pop_front().unwrap();
+        if explored.contains(visit) {
+            continue;
+        }
+        if visit == "SAN" {
+            // Quirk: We are node 0 and Santa is the last node, but neither of those nodes count.
+            // We are orbiting node 1 and want the travel distance to where Santa is orbiting which
+            // is node N-1. So we subtract 2 to throw those away.
+            return Ok(traveled - 2);
+        }
+        explored.insert(visit);
+        for adjacent in connections.get(visit).unwrap().iter() {
+            if !explored.contains(adjacent) {
+                frontier.push_back((adjacent, traveled + 1));
+            }
+        }
+    }
+    Err(Error::NoSolutionFound)
+}

@@ -50,5 +50,9 @@ fn main() -> Result<(), utils::errors::Error> {
         "Day 6: Part Two: I am a Steely-eyed Missile Man: {}",
         advent::day06::part_two()? // 475
     );
+    println!(
+        "Day 7: Part One: Maximizing Warp Drives: {}",
+        advent::day07::part_one()? // 199988 (verify)
+    );
     Ok(())
 }

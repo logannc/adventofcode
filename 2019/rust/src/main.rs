@@ -52,7 +52,11 @@ fn main() -> Result<(), utils::errors::Error> {
     );
     println!(
         "Day 7: Part One: Maximizing Warp Drives: {}",
-        advent::day07::part_one()? // 199988 (verify)
+        advent::day07::part_one()? // 199988
+    );
+    println!(
+        "Day 7: Part Two: Resumable Tape Machine: {}",
+        advent::day07::part_two()? // 17519904
     );
     Ok(())
 }

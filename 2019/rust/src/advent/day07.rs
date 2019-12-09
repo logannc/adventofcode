@@ -1,6 +1,8 @@
 use crate::utils::errors::Error;
 use crate::utils::files::{problem_input_path, read_file_split_on};
-use crate::utils::tape_machine::emulate_computer;
+use crate::utils::tape_machine::{TapeMachine, TapeMachineState};
+
+use std::collections::VecDeque;
 
 fn _generate(k: usize, source: &mut Vec<i32>) -> Vec<Vec<i32>> {
     let mut results = Vec::new();
@@ -31,42 +33,6 @@ fn permutations(source: &Vec<i32>) -> Vec<Vec<i32>> {
     _generate(source.len(), &mut source.clone())
 }
 
-struct HeapPermutator {
-    vec: Vec<i32>,
-    kstack: Vec<usize>,
-    stackpointer: usize,
-}
-
-impl HeapPermutator {
-    fn new(source: &Vec<i32>) -> Self {
-        HeapPermutator {
-            vec: source.clone(),
-            kstack: Vec::with_capacity(source.len()),
-            stackpointer: 0,
-        }
-    }
-}
-
-impl Iterator for HeapPermutator {
-    type Item = Vec<i32>;
-    fn next(&mut self) -> Option<Self::Item> {
-        let k = self.kstack[self.stackpointer];
-        if k == 1 {
-            self.stackpointer -= 1;
-            return Some(self.vec.clone());
-        } else {
-            self.stackpointer += 1;
-            self.kstack[self.stackpointer] = k - 1;
-            return self.next();
-            // TODO: very, very wrong
-        }
-    }
-}
-
-fn permutations_iter(source: &Vec<i32>) -> impl Iterator<Item = Vec<i32>> {
-    HeapPermutator::new(source)
-}
-
 pub fn part_one() -> Result<i32, Error> {
     let input_path = problem_input_path(7, None);
     let tape = read_file_split_on(&input_path, ",")?;
@@ -74,12 +40,53 @@ pub fn part_one() -> Result<i32, Error> {
     for state in permutations(&vec![0, 1, 2, 3, 4]) {
         let mut previous_signal = 0;
         for amp_phase in state {
-            let input = vec![amp_phase, previous_signal];
-            let outputs = emulate_computer(&mut tape.clone(), &input)?;
-            previous_signal = outputs[0];
-            if previous_signal > highest_signal {
-                highest_signal = previous_signal;
+            let mut tape_machine = TapeMachine::new(tape.clone(), false);
+            tape_machine.add_input(amp_phase);
+            tape_machine.add_input(previous_signal);
+            match tape_machine.run()? {
+                TapeMachineState::Halted => {
+                    let outputs = tape_machine.get_outputs();
+                    previous_signal = outputs[0];
+                    if previous_signal > highest_signal {
+                        highest_signal = previous_signal;
+                    }
+                }
+                _ => return Err(Error::Infallible),
             }
+        }
+    }
+    Ok(highest_signal)
+}
+
+pub fn part_two() -> Result<i32, Error> {
+    let input_path = problem_input_path(7, None);
+    let tape = read_file_split_on(&input_path, ",")?;
+    let mut amps = VecDeque::new();
+    let mut highest_signal = i32::min_value();
+    for phase_states in permutations(&vec![5, 6, 7, 8, 9]) {
+        for phase in phase_states {
+            let mut tape_machine = TapeMachine::new(tape.clone(), true);
+            tape_machine.add_input(phase);
+            amps.push_back(tape_machine);
+        }
+
+        let mut previous_signal = 0;
+        while !amps.is_empty() {
+            let mut amp = amps.pop_front().unwrap();
+            amp.add_input(previous_signal);
+            match amp.run()? {
+                TapeMachineState::RequestingInput => {
+                    amps.push_back(amp);
+                }
+                TapeMachineState::YieldingOutput => {
+                    previous_signal = amp.get_outputs_mut().pop_front().unwrap();
+                    amps.push_back(amp);
+                }
+                TapeMachineState::Halted => {}
+            }
+        }
+        if previous_signal > highest_signal {
+            highest_signal = previous_signal;
         }
     }
     Ok(highest_signal)

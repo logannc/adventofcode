@@ -58,5 +58,13 @@ fn main() -> Result<(), utils::errors::Error> {
         "Day 7: Part Two: Resumable Tape Machine: {}",
         advent::day07::part_two()? // 17519904
     );
+    println!(
+        "Day 8: Part One: Space Selfies: {}",
+        advent::day08::part_one()? // 1360
+    );
+    println!(
+        "Day 8: Part Two: Space Memes:",
+    );
+    advent::day08::part_two()?; // FPUAR
     Ok(())
 }

@@ -7,7 +7,6 @@ type Calories = u32;
 type Inventory = Vec<Calories>;
 type Caravan = Vec<Inventory>;
 
-
 pub fn part_one() -> Result<()> {
     let input_path = problem_input_path(1, Some(1));
     let content = fs::read_to_string(input_path)?;

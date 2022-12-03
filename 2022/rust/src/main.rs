@@ -1,3 +1,5 @@
+#![feature(iter_array_chunks)]
+
 mod advent;
 mod utils;
 
@@ -20,6 +22,18 @@ fn main() -> Result<()> {
         }
         (1, 2) => {
             advent::day01::part_two()?;
+        }
+        (2, 1) => {
+            advent::day02::part_one()?;
+        }
+        (2, 2) => {
+            advent::day02::part_two()?;
+        }
+        (3, 1) => {
+            advent::day03::part_one()?;
+        }
+        (3, 2) => {
+            advent::day03::part_two()?;
         }
         (d, p) => {
             println!("Day {}, Part {} is not yet implemented.", d, p);

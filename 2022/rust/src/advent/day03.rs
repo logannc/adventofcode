@@ -79,6 +79,7 @@ fn parse_rucksacks(input: &str) -> Vec<Rucksack> {
     input
         .lines()
         .map(|line| {
+            let line = line.trim();
             let length = line.len();
             let (left, right) = line.split_at(length / 2);
             let left_compartment: Compartment = left.into();
@@ -125,7 +126,7 @@ mod tests {
 jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL
 PmmdzqPrVvPwwTWBwg
 wMqvLMZHhHMvwLHjbvcjnnSBnvTQFn
-ttgJ tRGJ QctT ZtZT
+ttgJtRGJQctTZtZT
 CrZsJsPPZsGzwwsLwLmpwMDw"#;
 
     #[test]

@@ -1,0 +1,131 @@
+use crate::utils::*;
+use eyre::{Context, Report, Result};
+use std::{fs, str::FromStr};
+
+struct Assignment {
+    start: u32,
+    end: u32,
+}
+
+impl FromStr for Assignment {
+    type Err = Report;
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let indices: Result<Vec<u32>, _> = s
+            .split("-")
+            .map(|number| {
+                str::parse(number).wrap_err_with(|| format!("failed trying to parse [{}]", number))
+            })
+            .collect();
+        let indices = indices?;
+        let indices: [u32; 2] = indices.try_into().map_err(|original_value| {
+            Report::msg(format!("Attempting to parse [{}] as Assignment led to an indices of incorrect length [{:?}]", s, original_value))
+        })?;
+        let [start, end] = indices;
+        Ok(Assignment { start, end })
+    }
+}
+
+impl Assignment {
+    fn contains(&self, other: &Self) -> bool {
+        self.start <= other.start && other.end <= self.end
+    }
+
+    fn overlap(&self, other: &Self) -> bool {
+        (self.start <= other.start && other.start <= self.end)
+            || (other.start <= self.start && self.start <= other.end)
+    }
+}
+
+struct Pair {
+    left: Assignment,
+    right: Assignment,
+}
+
+impl FromStr for Pair {
+    type Err = Report;
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let assignments: Vec<&str> = s.split(",").collect();
+        let assignments: [&str; 2] = assignments.try_into().map_err(|original_value| {
+            Report::msg(format!(
+                "Attempting to parse [{}] as Pair led to an indices of incorrect length [{:?}]",
+                s, original_value
+            ))
+        })?;
+        let [left, right] = assignments;
+        let left: Assignment = str::parse(left)?;
+        let right: Assignment = str::parse(right)?;
+        Ok(Pair { left, right })
+    }
+}
+
+impl Pair {
+    fn contains(self) -> bool {
+        self.left.contains(&self.right) || self.right.contains(&self.left)
+    }
+
+    fn overlap(self) -> bool {
+        self.left.overlap(&self.right)
+    }
+}
+
+pub fn part_one() -> Result<()> {
+    let input_path = problem_input_path(4, Some(1));
+    let content = fs::read_to_string(input_path)?;
+    let assignments = parse_assignments(&content)?;
+    let result = part_one_inner(assignments);
+    println!("{}", result);
+    Ok(())
+}
+
+pub fn part_two() -> Result<()> {
+    let input_path = problem_input_path(4, Some(1));
+    let content = fs::read_to_string(input_path)?;
+    let assignments = parse_assignments(&content)?;
+    let result = part_two_inner(assignments);
+    println!("{}", result);
+    Ok(())
+}
+
+fn parse_assignments(input: &str) -> Result<Vec<Pair>> {
+    input.trim().lines().map(|line| str::parse(line)).collect()
+}
+
+fn part_one_inner(assignments: Vec<Pair>) -> u32 {
+    assignments
+        .into_iter()
+        .map(Pair::contains)
+        .filter(|b| *b)
+        .count() as u32
+}
+
+fn part_two_inner(assignments: Vec<Pair>) -> u32 {
+    assignments
+        .into_iter()
+        .map(Pair::overlap)
+        .filter(|b| *b)
+        .count() as u32
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const TEST_INPUT: &str = r#"2-4,6-8
+2-3,4-5
+5-7,7-9
+2-8,3-7
+6-6,4-6
+2-6,4-8"#;
+
+    #[test]
+    fn part_one_works() {
+        let assignments = parse_assignments(TEST_INPUT).unwrap();
+        assert_eq!(part_one_inner(assignments), 2);
+    }
+
+    #[test]
+    fn part_two_works() {
+        let assignments = parse_assignments(TEST_INPUT).unwrap();
+        assert_eq!(part_two_inner(assignments), 4);
+    }
+}

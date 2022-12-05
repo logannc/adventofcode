@@ -1,5 +1,5 @@
 use crate::utils::*;
-use eyre::{Context, Report, Result};
+use eyre::{Report, Result};
 use std::{fs, str::FromStr};
 
 struct Assignment {
@@ -10,17 +10,11 @@ struct Assignment {
 impl FromStr for Assignment {
     type Err = Report;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let indices: Result<Vec<u32>, _> = s
-            .split("-")
-            .map(|number| {
-                str::parse(number).wrap_err_with(|| format!("failed trying to parse [{}]", number))
-            })
-            .collect();
-        let indices = indices?;
-        let indices: [u32; 2] = indices.try_into().map_err(|original_value| {
-            Report::msg(format!("Attempting to parse [{}] as Assignment led to an indices of incorrect length [{:?}]", s, original_value))
-        })?;
-        let [start, end] = indices;
+        let (start, end) = s
+            .split_once("-")
+            .ok_or_else(|| Report::msg(format!("Failed to split [{}]", s)))?;
+        let start = str::parse(start)?;
+        let end = str::parse(end)?;
         Ok(Assignment { start, end })
     }
 }
@@ -44,14 +38,9 @@ struct Pair {
 impl FromStr for Pair {
     type Err = Report;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let assignments: Vec<&str> = s.split(",").collect();
-        let assignments: [&str; 2] = assignments.try_into().map_err(|original_value| {
-            Report::msg(format!(
-                "Attempting to parse [{}] as Pair led to an indices of incorrect length [{:?}]",
-                s, original_value
-            ))
-        })?;
-        let [left, right] = assignments;
+        let (left, right) = s
+            .split_once(",")
+            .ok_or_else(|| Report::msg(format!("Failed to split [{}]", s)))?;
         let left: Assignment = str::parse(left)?;
         let right: Assignment = str::parse(right)?;
         Ok(Pair { left, right })

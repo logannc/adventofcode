@@ -31,3 +31,19 @@ where
     let parsed: Result<Vec<T>, _> = content.split(pattern).map(str::parse::<T>).collect();
     parsed.map_err(|e| e.into())
 }
+
+// #[derive(Default)]
+// pub struct CharHasher(u64);
+
+// impl Hasher for CharHasher {
+//     fn write(&mut self, bytes: &[u8]) {
+//         for byte in bytes.iter() {
+//             self.0 = self.0.wrapping_shl(8) + (*byte as u64);
+//         }
+//     }
+//     fn finish(&self) -> u64 {
+//         self.0
+//     }
+// }
+
+// pub type CharHasherBuilder = BuildHasherDefault<CharHasher>;

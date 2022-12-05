@@ -17,6 +17,7 @@ struct Args {
 
 fn main() -> Result<()> {
     let args = Args::parse();
+    let start = std::time::Instant::now();
     match (args.day, args.part) {
         (1, 1) => {
             advent::day01::part_one()?;
@@ -52,5 +53,7 @@ fn main() -> Result<()> {
             println!("Day {}, Part {} is not yet implemented.", d, p);
         }
     }
+    let elapsed = start.elapsed();
+    println!("Elapsed: {:?}", elapsed);
     Ok(())
 }

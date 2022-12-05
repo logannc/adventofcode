@@ -31,14 +31,10 @@ impl FromStr for Stacks {
 
 impl Stacks {
     fn apply_command(&mut self, command: &Command) -> Result<()> {
-        let report = Report::msg(format!(
-            "unable to get {} and {} from {:?}",
-            command.from, command.to, self
-        ));
         let [from, to] = self
             .stacks
             .get_many_mut([command.from, command.to])
-            .wrap_err(report)?;
+            .wrap_err_with(|| Report::msg(format!("failed to get the from/to vectors")))?;
         for _ in 0..command.amt {
             let tmp = from.pop().wrap_err_with(|| Report::msg(format!("")))?;
             to.push(tmp);
@@ -47,14 +43,10 @@ impl Stacks {
     }
 
     fn apply_command_multiple(&mut self, command: &Command) -> Result<()> {
-        let report = Report::msg(format!(
-            "unable to get {} and {} from {:?}",
-            command.from, command.to, self
-        ));
         let [from, to] = self
             .stacks
             .get_many_mut([command.from, command.to])
-            .wrap_err(report)?;
+            .wrap_err_with(|| Report::msg(format!("failed to get the from/to vectors")))?;
         let moving = from.split_off(from.len() - command.amt);
         to.extend(moving);
         Ok(())
@@ -144,11 +136,9 @@ fn part_two_inner(mut stacks: Stacks, commands: Commands) -> Result<String> {
 }
 
 fn parse_input(input: &str) -> Result<(Stacks, Commands)> {
-    let parts: Vec<&str> = input.split("\n\n").collect();
-    let parts: [&str; 2] = parts
-        .try_into()
-        .map_err(|_| Report::msg(format!("input didn't split by double newline correctly")))?;
-    let [stack_input, command_input] = parts;
+    let (stack_input, command_input) = input
+        .split_once("\n\n")
+        .wrap_err_with(|| Report::msg(format!("input didn't split by double newline correctly")))?;
     let stacks = str::parse(stack_input)?;
     let commands = str::parse(command_input)?;
     Ok((stacks, commands))

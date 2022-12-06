@@ -8,5 +8,9 @@ edition = "2021"
 [dependencies]
 clap = { version = "4.*", features = ["derive"] }
 eyre = "0.6.8"
+flamegraph = "0.6.2"
 itertools = "0.10.1"
 regex = "1.5.4"
+
+[profile.release]
+debug = true

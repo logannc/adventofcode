@@ -1,24 +1,9 @@
 use crate::utils::*;
 use eyre::Result;
 use std::{
-    collections::{HashMap, HashSet},
+    collections::HashSet,
     fs,
 };
-
-#[derive(Debug, Default)]
-struct Compartment {
-    items: HashMap<char, u32>,
-}
-
-impl From<&str> for Compartment {
-    fn from(value: &str) -> Self {
-        let mut items = HashMap::new();
-        for c in value.chars() {
-            *(items.entry(c).or_default()) += 1;
-        }
-        Compartment { items }
-    }
-}
 
 struct Rucksack {
     left: Compartment,

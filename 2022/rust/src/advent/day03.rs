@@ -1,9 +1,6 @@
 use crate::utils::*;
 use eyre::Result;
-use std::{
-    collections::HashSet,
-    fs,
-};
+use std::{collections::HashSet, fs};
 
 struct Rucksack {
     left: Compartment,

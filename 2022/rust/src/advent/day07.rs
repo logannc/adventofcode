@@ -3,7 +3,7 @@ use eyre::{ContextCompat, Report, Result};
 use std::{
     fs,
     iter::{once, Peekable},
-    str::FromStr,
+    str::{FromStr, Lines},
 };
 
 trait FileSystemSize {
@@ -122,15 +122,37 @@ impl FromStr for LSLine {
     }
 }
 
-// could be done more robustly by not assuming cd; ls; cd, etc
-// it would require a top level peeking loop and the cd and ls functions would be like recursive descent parser functions
-// it'd basically just be what we have for the last loop, but a middle case where the directory is passed in and out
-fn parse_lines<'a>(
-    mut input: Peekable<impl Iterator<Item = &'a str>>,
-) -> Result<(Directory, Peekable<impl Iterator<Item = &'a str>>)> {
-    let cd_line: CDLine = str::parse(input.next().unwrap())?;
-    let mut d = Directory::named(cd_line.0.into());
-    input.next().unwrap();
+fn parse_inner<'a>(
+    mut d: Directory,
+    mut input: Peekable<Lines<'a>>,
+) -> Result<(Directory, Peekable<Lines<'a>>)> {
+    while let Some(line) = input.peek() {
+        if line.starts_with(CDLine::PREFIX) {
+            if line.ends_with("..") {
+                // manually consume since we don't need a whole function for it.
+                input
+                    .next()
+                    .expect("we *just* peeked, so we know there is a line.");
+                return Ok((d, input));
+            } else {
+                let subd: Directory;
+                (subd, input) = parse_cd(input)?;
+                d.contents.push(FileSystemEntry::Directory(subd));
+            }
+        } else {
+            (d, input) = parse_ls(d, input)?;
+        }
+    }
+    Ok((d, input))
+}
+
+fn parse_ls<'a>(
+    mut d: Directory,
+    mut input: Peekable<Lines<'a>>,
+) -> Result<(Directory, Peekable<Lines<'a>>)> {
+    input
+        .next()
+        .expect("callers guarantee the first line is $ ls");
     while let Some(line) = input.next_if(|line| !line.starts_with("$")) {
         let ls_line: LSLine = str::parse(line)?;
         match ls_line {
@@ -138,26 +160,22 @@ fn parse_lines<'a>(
                 _name: name.into(),
                 size,
             })),
-            // We ignore dirs because we add them when we cd into them
+            // We ignore dirs because we add them after we cd into them
             // we assume the order of the vec for the directory contents doesn't matter. if it does we can alphabetize it later.
             LSLine::Dir(_) => {}
         }
     }
-    loop {
-        input = match input.peek() {
-            Some(next_cd) => {
-                if next_cd.contains("..") {
-                    input.next().unwrap();
-                    return Ok((d, input));
-                } else {
-                    let (subd, input) = parse_lines(input)?;
-                    d.contents.push(FileSystemEntry::Directory(subd));
-                    input
-                }
-            }
-            None => break,
-        };
-    }
+    Ok((d, input))
+}
+
+fn parse_cd<'a>(mut input: Peekable<Lines<'a>>) -> Result<(Directory, Peekable<Lines<'a>>)> {
+    let cd_line: CDLine = str::parse(
+        input
+            .next()
+            .expect("callers guarantee the first line is `$ cd foo`"),
+    )?;
+    let d = Directory::named(cd_line.0.into());
+    let (d, input) = parse_inner(d, input)?;
     Ok((d, input))
 }
 
@@ -178,7 +196,7 @@ pub fn part_two() -> Result<()> {
 }
 
 fn part_one_inner(input: &str) -> Result<usize> {
-    let (root, _) = parse_lines(input.lines().peekable())?;
+    let (root, _) = parse_cd(input.lines().peekable())?;
     Ok(root
         .iter()
         .filter(|fse| match fse {
@@ -192,7 +210,7 @@ fn part_one_inner(input: &str) -> Result<usize> {
 fn part_two_inner(input: &str) -> Result<usize> {
     const TOTAL_SPACE: usize = 70000000;
     const REQUIRED_SPACE: usize = 30000000;
-    let (root, _) = parse_lines(input.lines().peekable())?;
+    let (root, _) = parse_cd(input.lines().peekable())?;
     let used_space = TOTAL_SPACE - root.size();
     let minimum_size = REQUIRED_SPACE - used_space;
     root.iter()

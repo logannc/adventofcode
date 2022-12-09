@@ -1,4 +1,5 @@
 #![feature(iter_array_chunks)]
+#![feature(array_windows)]
 #![feature(get_many_mut)]
 
 mod advent;
@@ -66,6 +67,12 @@ fn main() -> Result<()> {
         }
         (8, 2) => {
             advent::day08::part_two()?;
+        }
+        (9, 1) => {
+            advent::day09::part_one()?;
+        }
+        (9, 2) => {
+            advent::day09::part_two()?;
         }
         (d, p) => {
             println!("Day {}, Part {} is not yet implemented.", d, p);

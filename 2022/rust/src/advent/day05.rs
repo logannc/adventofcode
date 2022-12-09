@@ -95,22 +95,22 @@ impl FromStr for Commands {
     }
 }
 
-pub fn part_one() -> Result<()> {
+pub fn part_one() -> Result<String> {
     let input_path = problem_input_path(5, Some(1));
     let content = fs::read_to_string(input_path)?;
     let (stacks, commands) = parse_input(&content)?;
     let result = part_one_inner(stacks, commands)?;
     println!("{}", result);
-    Ok(())
+    Ok(result)
 }
 
-pub fn part_two() -> Result<()> {
+pub fn part_two() -> Result<String> {
     let input_path = problem_input_path(5, Some(1));
     let content = fs::read_to_string(input_path)?;
     let (stacks, commands) = parse_input(&content)?;
     let result = part_two_inner(stacks, commands)?;
     println!("{}", result);
-    Ok(())
+    Ok(result)
 }
 
 fn part_one_inner(mut stacks: Stacks, commands: Commands) -> Result<String> {
@@ -162,11 +162,13 @@ move 1 from 1 to 2"#;
     fn part_one_works() {
         let (stacks, commands) = parse_input(TEST_INPUT).unwrap();
         assert_eq!(part_one_inner(stacks, commands).unwrap(), "CMZ");
+        assert_eq!(part_one().unwrap(), "DHBJQJCCW");
     }
 
     #[test]
     fn part_two_works() {
         let (stacks, commands) = parse_input(TEST_INPUT).unwrap();
         assert_eq!(part_two_inner(stacks, commands).unwrap(), "MCD");
+        assert_eq!(part_two().unwrap(), "WJVRLSJJT");
     }
 }

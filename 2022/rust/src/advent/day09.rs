@@ -2,26 +2,22 @@ use crate::utils::*;
 use derive_more::{Add, Sub};
 use eyre::{ContextCompat, Report, Result};
 use itertools::Itertools;
-use std::{
-    collections::{BTreeMap},
-    fs,
-    str::FromStr,
-};
+use std::{collections::BTreeMap, fs, str::FromStr};
 
-pub fn part_one() -> Result<()> {
+pub fn part_one() -> Result<usize> {
     let input_path = problem_input_path(9, Some(1));
     let content = fs::read_to_string(input_path)?;
     let result = part_one_inner(&content)?;
     println!("{}", result);
-    Ok(())
+    Ok(result)
 }
 
-pub fn part_two() -> Result<()> {
+pub fn part_two() -> Result<usize> {
     let input_path = problem_input_path(9, Some(1));
     let content = fs::read_to_string(input_path)?;
     let result = part_two_inner(&content)?;
     println!("{}", result);
-    Ok(())
+    Ok(result)
 }
 
 fn part_one_inner(input: &str) -> Result<usize> {
@@ -186,11 +182,13 @@ U 20
     #[test]
     fn part_one_works() {
         assert_eq!(part_one_inner(TEST_INPUT).unwrap(), 13);
+        assert_eq!(part_one().unwrap(), 5878);
     }
 
     #[test]
     fn part_two_works() {
         assert_eq!(part_two_inner(TEST_INPUT).unwrap(), 1);
         assert_eq!(part_two_inner(TEST_INPUT_TWO).unwrap(), 36);
+        assert_eq!(part_two().unwrap(), 2405);
     }
 }

@@ -57,22 +57,22 @@ impl Pair {
     }
 }
 
-pub fn part_one() -> Result<()> {
+pub fn part_one() -> Result<u32> {
     let input_path = problem_input_path(4, Some(1));
     let content = fs::read_to_string(input_path)?;
     let assignments = parse_assignments(&content)?;
     let result = part_one_inner(assignments);
     println!("{}", result);
-    Ok(())
+    Ok(result)
 }
 
-pub fn part_two() -> Result<()> {
+pub fn part_two() -> Result<u32> {
     let input_path = problem_input_path(4, Some(1));
     let content = fs::read_to_string(input_path)?;
     let assignments = parse_assignments(&content)?;
     let result = part_two_inner(assignments);
     println!("{}", result);
-    Ok(())
+    Ok(result)
 }
 
 fn parse_assignments(input: &str) -> Result<Vec<Pair>> {
@@ -110,11 +110,13 @@ mod tests {
     fn part_one_works() {
         let assignments = parse_assignments(TEST_INPUT).unwrap();
         assert_eq!(part_one_inner(assignments), 2);
+        assert_eq!(part_one().unwrap(), 498);
     }
 
     #[test]
     fn part_two_works() {
         let assignments = parse_assignments(TEST_INPUT).unwrap();
         assert_eq!(part_two_inner(assignments), 4);
+        assert_eq!(part_two().unwrap(), 859);
     }
 }

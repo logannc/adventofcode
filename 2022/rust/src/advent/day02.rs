@@ -79,21 +79,21 @@ impl PartialOrd for Shape {
 type Round = (Shape, Shape);
 type Strategy = Vec<Round>;
 
-pub fn part_one() -> Result<()> {
+pub fn part_one() -> Result<u32> {
     let input_path = problem_input_path(2, Some(1));
     let content = fs::read_to_string(input_path)?;
     let strategy = parse_strategy_one(&content)?;
     let result = part_one_inner(strategy);
     println!("{}", result);
-    Ok(())
+    Ok(result)
 }
 
-pub fn part_two() -> Result<()> {
+pub fn part_two() -> Result<u32> {
     let input_path = problem_input_path(2, Some(1));
     let content = fs::read_to_string(input_path)?;
     let result = part_two_inner(&content)?;
     println!("{}", result);
-    Ok(())
+    Ok(result)
 }
 
 fn parse_strategy_one(input: &str) -> Result<Strategy> {
@@ -164,10 +164,12 @@ C Z"#;
     fn part_one_works() {
         let strategy = parse_strategy_one(TEST_INPUT).unwrap();
         assert_eq!(part_one_inner(strategy), 15);
+        assert_eq!(part_one().unwrap(), 10941);
     }
 
     #[test]
     fn part_two_works() {
         assert_eq!(part_two_inner(TEST_INPUT).unwrap(), 12);
+        assert_eq!(part_two().unwrap(), 13071);
     }
 }

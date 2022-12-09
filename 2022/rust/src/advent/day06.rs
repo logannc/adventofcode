@@ -3,20 +3,20 @@ use eyre::Result;
 use itertools::Itertools;
 use std::fs;
 
-pub fn part_one() -> Result<()> {
+pub fn part_one() -> Result<usize> {
     let input_path = problem_input_path(6, Some(1));
     let content = fs::read_to_string(input_path)?;
     let result = solve::<4>(&content);
     println!("{}", result);
-    Ok(())
+    Ok(result)
 }
 
-pub fn part_two() -> Result<()> {
+pub fn part_two() -> Result<usize> {
     let input_path = problem_input_path(6, Some(1));
     let content = fs::read_to_string(input_path)?;
     let result = solve::<14>(&content);
     println!("{}", result);
-    Ok(())
+    Ok(result)
 }
 
 fn solve<const N: usize>(input: &str) -> usize {
@@ -51,6 +51,7 @@ mod tests {
         for (input, expected) in TEST_INPUTS_PART_ONE {
             assert_eq!(solve::<4>(input), expected);
         }
+        assert_eq!(part_one().unwrap(), 1275);
     }
 
     const TEST_INPUTS_PART_TWO: [(&str, usize); 5] = [
@@ -66,5 +67,6 @@ mod tests {
         for (input, expected) in TEST_INPUTS_PART_TWO {
             assert_eq!(solve::<14>(input), expected);
         }
+        assert_eq!(part_two().unwrap(), 3605);
     }
 }

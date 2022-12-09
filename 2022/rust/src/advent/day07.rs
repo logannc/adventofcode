@@ -179,20 +179,20 @@ fn parse_cd<'a>(mut input: Peekable<Lines<'a>>) -> Result<(Directory, Peekable<L
     Ok((d, input))
 }
 
-pub fn part_one() -> Result<()> {
+pub fn part_one() -> Result<usize> {
     let input_path = problem_input_path(7, Some(1));
     let content = fs::read_to_string(input_path)?;
     let result = part_one_inner(&content)?;
     println!("{}", result);
-    Ok(())
+    Ok(result)
 }
 
-pub fn part_two() -> Result<()> {
+pub fn part_two() -> Result<usize> {
     let input_path = problem_input_path(7, Some(1));
     let content = fs::read_to_string(input_path)?;
     let result = part_two_inner(&content)?;
     println!("{}", result);
-    Ok(())
+    Ok(result)
 }
 
 fn part_one_inner(input: &str) -> Result<usize> {
@@ -254,10 +254,12 @@ $ ls
     #[test]
     fn part_one_works() {
         assert_eq!(part_one_inner(TEST_INPUT).unwrap(), 95437);
+        assert_eq!(part_one().unwrap(), 1232307);
     }
 
     #[test]
     fn part_two_works() {
         assert_eq!(part_two_inner(TEST_INPUT).unwrap(), 24933642);
+        assert_eq!(part_two().unwrap(), 7268994);
     }
 }

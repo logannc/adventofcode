@@ -39,22 +39,22 @@ impl Priority for char {
     }
 }
 
-pub fn part_one() -> Result<()> {
+pub fn part_one() -> Result<u32> {
     let input_path = problem_input_path(3, Some(1));
     let content = fs::read_to_string(input_path)?;
     let rucksacks = parse_rucksacks(&content);
     let result = part_one_inner(rucksacks);
     println!("{}", result);
-    Ok(())
+    Ok(result)
 }
 
-pub fn part_two() -> Result<()> {
+pub fn part_two() -> Result<u32> {
     let input_path = problem_input_path(3, Some(1));
     let content = fs::read_to_string(input_path)?;
     let rucksacks = parse_rucksacks(&content);
     let result = part_two_inner(rucksacks);
     println!("{}", result);
-    Ok(())
+    Ok(result)
 }
 
 fn parse_rucksacks(input: &str) -> Vec<Rucksack> {
@@ -115,11 +115,13 @@ CrZsJsPPZsGzwwsLwLmpwMDw"#;
     fn part_one_works() {
         let rucksacks = parse_rucksacks(TEST_INPUT);
         assert_eq!(part_one_inner(rucksacks), 157);
+        assert_eq!(part_one().unwrap(), 8233);
     }
 
     #[test]
     fn part_two_works() {
         let rucksacks = parse_rucksacks(TEST_INPUT);
         assert_eq!(part_two_inner(rucksacks), 70);
+        assert_eq!(part_two().unwrap(), 2821);
     }
 }

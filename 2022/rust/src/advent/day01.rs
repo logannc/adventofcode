@@ -7,22 +7,22 @@ type Calories = u32;
 type Inventory = Vec<Calories>;
 type Caravan = Vec<Inventory>;
 
-pub fn part_one() -> Result<()> {
+pub fn part_one() -> Result<u32> {
     let input_path = problem_input_path(1, Some(1));
     let content = fs::read_to_string(input_path)?;
     let caravan = parse_caravan(&content)?;
     let result = part_one_inner(caravan);
     println!("{}", result);
-    Ok(())
+    Ok(result)
 }
 
-pub fn part_two() -> Result<()> {
+pub fn part_two() -> Result<u32> {
     let input_path = problem_input_path(1, Some(1));
     let content = fs::read_to_string(input_path)?;
     let caravan = parse_caravan(&content)?;
     let result = part_two_inner(caravan);
     println!("{}", result);
-    Ok(())
+    Ok(result)
 }
 
 fn parse_caravan(input: &str) -> Result<Caravan> {
@@ -85,11 +85,13 @@ mod tests {
     fn part_one_works() {
         let caravan = parse_caravan(TEST_INPUT).unwrap();
         assert_eq!(part_one_inner(caravan), 24000);
+        assert_eq!(part_one().unwrap(), 69883);
     }
 
     #[test]
     fn part_two_works() {
         let caravan = parse_caravan(TEST_INPUT).unwrap();
         assert_eq!(part_two_inner(caravan), 45000);
+        assert_eq!(part_two().unwrap(), 207576);
     }
 }

@@ -1,6 +1,6 @@
 use crate::utils::*;
 use eyre::Result;
-use std::{collections::HashSet, fs};
+use std::{collections::BTreeSet, fs};
 
 struct Rucksack {
     left: Compartment,
@@ -9,14 +9,14 @@ struct Rucksack {
 
 impl Rucksack {
     fn shared_item(&self) -> char {
-        let left_set: HashSet<char> = self.left.items.keys().copied().collect();
-        let right_set: HashSet<char> = self.right.items.keys().copied().collect();
+        let left_set: BTreeSet<char> = self.left.items.keys().copied().collect();
+        let right_set: BTreeSet<char> = self.right.items.keys().copied().collect();
         left_set.intersection(&right_set).next().unwrap().clone()
     }
 
-    fn item_set(&self) -> HashSet<char> {
-        let left_set: HashSet<char> = self.left.items.keys().copied().collect();
-        let right_set: HashSet<char> = self.right.items.keys().copied().collect();
+    fn item_set(&self) -> BTreeSet<char> {
+        let left_set: BTreeSet<char> = self.left.items.keys().copied().collect();
+        let right_set: BTreeSet<char> = self.right.items.keys().copied().collect();
         left_set.union(&right_set).copied().collect()
     }
 }
@@ -89,7 +89,7 @@ fn part_two_inner(rucksacks: Vec<Rucksack>) -> u32 {
             group
                 .into_iter()
                 .map(Rucksack::item_set)
-                .reduce(|a, b| a.intersection(&b).copied().collect::<HashSet<char>>())
+                .reduce(|a, b| a.intersection(&b).copied().collect::<BTreeSet<char>>())
                 .unwrap()
                 .into_iter()
                 .next()

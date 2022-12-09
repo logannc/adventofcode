@@ -1,5 +1,5 @@
 use eyre::Result;
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 use std::error::Error;
 use std::fs;
 use std::path::{Path, PathBuf};
@@ -51,12 +51,12 @@ where
 
 #[derive(Debug, Default)]
 pub struct Compartment {
-    pub items: HashMap<char, u32>,
+    pub items: BTreeMap<char, u32>,
 }
 
 impl From<&str> for Compartment {
     fn from(value: &str) -> Self {
-        let mut items = HashMap::new();
+        let mut items = BTreeMap::new();
         for c in value.chars() {
             *(items.entry(c).or_default()) += 1;
         }

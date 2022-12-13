@@ -33,10 +33,7 @@ fn parse_caravan(input: &str) -> Result<Caravan> {
             group
                 .trim()
                 .split("\n")
-                .map(|s| {
-                    s.parse::<Calories>()
-                        .wrap_err_with(|| format!("Failed to parse [{}]", s))
-                })
+                .map(|s| str::parse(s).wrap_err_with(|| format!("Failed to parse [{}]", s)))
                 .collect()
         })
         .collect();

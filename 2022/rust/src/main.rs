@@ -80,6 +80,12 @@ fn main() -> Result<()> {
         (10, 2) => {
             advent::day10::part_two()?;
         }
+        (11, 1) => {
+            advent::day11::part_one()?;
+        }
+        (11, 2) => {
+            advent::day11::part_two()?;
+        }
         (d, p) => {
             println!("Day {}, Part {} is not yet implemented.", d, p);
         }

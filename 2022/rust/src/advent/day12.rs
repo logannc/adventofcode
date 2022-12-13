@@ -1,7 +1,11 @@
 use crate::utils::*;
 use eyre::{Report, Result};
 use itertools::Itertools;
-use std::{fs, str::FromStr, collections::{VecDeque, HashSet}};
+use std::{
+    collections::{HashSet, VecDeque},
+    fs,
+    str::FromStr,
+};
 
 pub fn part_one() -> Result<usize> {
     let input_path = problem_input_path(12, Some(1));
@@ -86,21 +90,26 @@ impl Grid {
             grid[point.0][point.1] = char::from_u32(self.grid[point.0][point.1] as u32).unwrap();
         }
         let point = path.path.last().unwrap();
-        grid[point.0][point.1] = char::from_u32(self.grid[point.0][point.1] as u32).unwrap().to_ascii_uppercase();
-        Ok(grid.into_iter().map(|row| row.into_iter().join("")).join("\n"))
+        grid[point.0][point.1] = char::from_u32(self.grid[point.0][point.1] as u32)
+            .unwrap()
+            .to_ascii_uppercase();
+        Ok(grid
+            .into_iter()
+            .map(|row| row.into_iter().join(""))
+            .join("\n"))
     }
     fn up_neighbors(&self, point: &(usize, usize)) -> impl Iterator<Item = (usize, usize)> {
         let height = self.grid[point.0][point.1];
         let cardinals = vec![(-1, 0), (1, 0), (0, -1), (0, 1)];
         let neighbors: Vec<(usize, usize)> = cardinals
             .into_iter()
-            .map(move|direction| {
+            .map(move |direction| {
                 (
                     point.0.wrapping_add_signed(direction.0),
                     point.1.wrapping_add_signed(direction.1),
                 )
             })
-            .filter(move|neighbor| {
+            .filter(move |neighbor| {
                 if let Some(&neighbor_height) = self
                     .grid
                     .get(neighbor.0)
@@ -110,21 +119,22 @@ impl Grid {
                 } else {
                     false
                 }
-            }).collect();
-            neighbors.into_iter()
+            })
+            .collect();
+        neighbors.into_iter()
     }
     fn down_neighbors(&self, point: &(usize, usize)) -> impl Iterator<Item = (usize, usize)> {
         let height = self.grid[point.0][point.1];
         let cardinals = vec![(-1, 0), (1, 0), (0, -1), (0, 1)];
         let neighbors: Vec<(usize, usize)> = cardinals
             .into_iter()
-            .map(move|direction| {
+            .map(move |direction| {
                 (
                     point.0.wrapping_add_signed(direction.0),
                     point.1.wrapping_add_signed(direction.1),
                 )
             })
-            .filter(move|neighbor| {
+            .filter(move |neighbor| {
                 if let Some(&neighbor_height) = self
                     .grid
                     .get(neighbor.0)
@@ -134,12 +144,16 @@ impl Grid {
                 } else {
                     false
                 }
-            }).collect();
-            neighbors.into_iter()
+            })
+            .collect();
+        neighbors.into_iter()
     }
     fn find_shortest_path_up(&self) -> Result<Path> {
         let mut seen: HashSet<(usize, usize)> = HashSet::new();
-        let mut frontier: VecDeque<Path> = vec![Path { path: vec![self.start] } ].into();
+        let mut frontier: VecDeque<Path> = vec![Path {
+            path: vec![self.start],
+        }]
+        .into();
         loop {
             if let Some(mut path) = frontier.pop_front() {
                 let most_recent = path.path.last().unwrap();
@@ -163,7 +177,10 @@ impl Grid {
 
     fn find_shortest_path_down(&self) -> Result<Path> {
         let mut seen: HashSet<(usize, usize)> = HashSet::new();
-        let mut frontier: VecDeque<Path> = vec![Path { path: vec![self.end] } ].into();
+        let mut frontier: VecDeque<Path> = vec![Path {
+            path: vec![self.end],
+        }]
+        .into();
         loop {
             if let Some(mut path) = frontier.pop_front() {
                 let most_recent = path.path.last().unwrap();

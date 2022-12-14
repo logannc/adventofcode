@@ -1,9 +1,6 @@
 use crate::utils::*;
 use eyre::{Report, Result};
-use std::{
-    fs,
-    str::FromStr, fmt::Debug,
-};
+use std::{fmt::Debug, fs, str::FromStr};
 
 pub fn part_one() -> Result<usize> {
     let input_path = problem_input_path(13, Some(1));
@@ -41,9 +38,16 @@ fn part_one_inner(input: &str) -> Result<usize> {
 fn part_two_inner(input: &str) -> Result<usize> {
     let left_decoder = SpecialLists::List(vec![SpecialLists::List(vec![SpecialLists::Number(2)])]);
     let right_decoder = SpecialLists::List(vec![SpecialLists::List(vec![SpecialLists::Number(6)])]);
-    let mut lists: Vec<SpecialLists> = input.trim().split("\n\n").into_iter().map(|pair| {
-        pair.lines().map(|line| str::parse::<SpecialLists>(line).unwrap())
-    }).flatten().collect();
+    let mut lists: Vec<SpecialLists> = input
+        .trim()
+        .split("\n\n")
+        .into_iter()
+        .map(|pair| {
+            pair.lines()
+                .map(|line| str::parse::<SpecialLists>(line).unwrap())
+        })
+        .flatten()
+        .collect();
     lists.push(left_decoder.clone());
     lists.push(right_decoder.clone());
     lists.sort();

@@ -28,13 +28,13 @@ fn part_one_inner<const Y: isize>(input: &str) -> Result<usize> {
     let min = readings
         .0
         .iter()
-        .map(|reading| reading.sensor.x - distance(&reading.sensor, &reading.beacon) as isize)
+        .map(|reading| reading.sensor.x - reading.radius as isize)
         .min()
         .unwrap();
     let max = readings
         .0
         .iter()
-        .map(|reading| reading.sensor.x + distance(&reading.sensor, &reading.beacon) as isize)
+        .map(|reading| reading.sensor.x + reading.radius as isize)
         .max()
         .unwrap();
     Ok((min..=max)
@@ -63,7 +63,6 @@ fn part_two_inner<const MAX: isize>(input: &str) -> Result<isize> {
         })
         .next()
         .unwrap();
-    println!("{}, {}", x, y);
     Ok(x * 4000000 + y)
 }
 
@@ -104,6 +103,7 @@ fn distance(sensor: &Point, beacon: &Point) -> usize {
 struct SensorReading {
     sensor: Point,
     beacon: Point,
+    radius: usize,
 }
 
 impl FromStr for SensorReading {
@@ -120,7 +120,7 @@ impl FromStr for SensorReading {
             .wrap_err_with(|| format!("failed to strip beacon prefix for [{}]", line))?;
         let sensor = str::parse(sensor_coords)?;
         let beacon = str::parse(beacon_coords)?;
-        Ok(SensorReading { sensor, beacon })
+        Ok(SensorReading { sensor, beacon, radius: distance(&sensor, &beacon) })
     }
 }
 
@@ -130,12 +130,11 @@ impl SensorReading {
             return false;
         }
         let beacon_distance = distance(&self.sensor, beacon);
-        let radius = distance(&self.sensor, &self.beacon);
-        beacon_distance <= radius
+        beacon_distance <= self.radius
     }
 
     fn border(&self) -> impl Iterator<Item = Point> {
-        let d = distance(&self.sensor, &self.beacon) + 1;
+        let d = self.radius + 1;
         let mut points = Vec::with_capacity(d * 4);
         let top_point = Point {
             x: self.sensor.x,
@@ -150,7 +149,7 @@ impl SensorReading {
             x: top_point.x + 1,
             y: top_point.y + 1,
         };
-        while distance(&self.sensor, &point) == d {
+        for _ in 0..d {
             points.push(point);
             point = Point {
                 x: point.x + 1,
@@ -161,7 +160,7 @@ impl SensorReading {
             x: top_point.x - 1,
             y: top_point.y + 1,
         };
-        while distance(&self.sensor, &point) == d {
+        for _ in 0..d {
             points.push(point);
             point = Point {
                 x: point.x - 1,
@@ -172,7 +171,7 @@ impl SensorReading {
             x: bottom_point.x + 1,
             y: bottom_point.y - 1,
         };
-        while distance(&self.sensor, &point) == d {
+        for _ in 0..d {
             points.push(point);
             point = Point {
                 x: point.x + 1,
@@ -183,7 +182,7 @@ impl SensorReading {
             x: bottom_point.x - 1,
             y: bottom_point.y - 1,
         };
-        while distance(&self.sensor, &point) == d {
+        for _ in 0..d {
             points.push(point);
             point = Point {
                 x: point.x - 1,

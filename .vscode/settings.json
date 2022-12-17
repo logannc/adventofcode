@@ -1,5 +1,6 @@
 {
-    "rust-analyzer.linkedProjects": [
+  "rust-analyzer.linkedProjects": [
+    "2022/rust/Cargo.toml",
     "C:\\Users\\logan\\Documents\\workspace\\adventofcode\\2022\\rust\\Cargo.toml"
-    ]
+  ]
 }

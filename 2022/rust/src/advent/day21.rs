@@ -1,13 +1,6 @@
 use crate::utils::*;
-use eyre::{Report, Result};
-use itertools::Itertools;
-use rayon::prelude::*;
-use std::{
-    collections::{BTreeMap, HashMap, VecDeque},
-    fs,
-    ops::{Add, Mul, Sub},
-    str::FromStr,
-};
+use eyre::Result;
+use std::{collections::HashMap, fs};
 
 pub fn part_one() -> Result<isize> {
     let input_path = problem_input_path(21, Some(1));
@@ -93,7 +86,6 @@ impl Compute {
                 (None, Some(v)) => self.inverse(left, result * v),
                 _ => panic!("both depend on humn"),
             },
-            _ => panic!(),
         }
     }
 }

@@ -26,11 +26,7 @@ pub fn part_two() -> Result<usize> {
 fn part_one_inner(input: &str) -> Result<usize> {
     let blueprints: Result<Vec<Blueprint>, _> =
         input.trim().lines().map(str::parse::<Blueprint>).collect();
-    Ok(blueprints?
-        .into_par_iter()
-        // .into_iter()
-        .map(|b| b.quality_score())
-        .sum())
+    Ok(blueprints?.into_par_iter().map(|b| b.quality_score()).sum())
 }
 
 fn part_two_inner(input: &str) -> Result<usize> {
@@ -41,7 +37,6 @@ fn part_two_inner(input: &str) -> Result<usize> {
         .take(3)
         .collect();
     Ok(blueprints?
-        // .into_par_iter()
         .into_iter()
         .map(|b| b.geodes_harvested(32))
         .product())
@@ -157,44 +152,26 @@ impl Blueprint {
     }
 
     fn bound(&self, state: &State) -> usize {
-        // imperative loop *doubles* the time!? (~750us to 1.5ms)
-        // let (mut obsidian, mut geodes, mut obsidian_bots) = (
-        //     state.materials.obsidian,
-        //     state.materials.geode + state.bots.geode * state.time_remaining,
-        //     state.bots.obsidian,
-        // );
-        // for time_left in (0..state.time_remaining).rev() {
-        //     if obsidian >= self.geode_bot_cost.obsidian {
-        //         obsidian += self.geode_bot_cost.obsidian + obsidian_bots;
-        //         geodes += time_left;
-        //     } else {
-        //         obsidian += obsidian_bots;
-        //         obsidian_bots += 1;
-        //     }
-        // }
-        state.bots.geode * state.time_remaining
-            + (0..state.time_remaining)
-                .rev()
-                .fold(
+        // imperative version is slower for some reason
+        let (_, _, future_geodes) = (0..state.time_remaining).rev().fold(
+            (
+                state.materials.obsidian,
+                state.bots.obsidian,
+                state.materials.geode,
+            ),
+            |(obsidian, obsidian_rate, geodes), time_left| {
+                if obsidian >= self.geode_bot_cost.obsidian {
                     (
-                        state.materials.obsidian,
-                        state.bots.obsidian,
-                        state.materials.geode,
-                    ),
-                    |(obsidian, obsidian_rate, geodes), time_left| {
-                        if obsidian >= self.geode_bot_cost.obsidian {
-                            (
-                                obsidian - self.geode_bot_cost.obsidian + obsidian_rate,
-                                obsidian_rate,
-                                geodes + time_left,
-                            )
-                        } else {
-                            (obsidian + obsidian_rate, obsidian_rate + 1, geodes)
-                        }
-                    },
-                )
-                .2
-        // geodes
+                        obsidian - self.geode_bot_cost.obsidian + obsidian_rate,
+                        obsidian_rate,
+                        geodes + time_left,
+                    )
+                } else {
+                    (obsidian + obsidian_rate, obsidian_rate + 1, geodes)
+                }
+            },
+        );
+        state.bots.geode * state.time_remaining + future_geodes
     }
 
     fn choices(&self, state: &State) -> impl Iterator<Item = State> {

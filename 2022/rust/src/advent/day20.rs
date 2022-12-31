@@ -1,12 +1,9 @@
 use crate::utils::*;
-use eyre::{Report, Result};
+use eyre::Result;
 use itertools::Itertools;
-use rayon::prelude::*;
 use std::{
     collections::{BTreeMap, VecDeque},
     fs,
-    ops::{Add, Mul, Sub},
-    str::FromStr,
 };
 
 pub fn part_one() -> Result<isize> {
@@ -26,59 +23,54 @@ pub fn part_two() -> Result<isize> {
 }
 
 fn part_one_inner(input: &str) -> Result<isize> {
-    let original_value_order: Vec<isize> =
-        input.trim().lines().flat_map(str::parse::<isize>).collect();
-    let mut id_to_value = BTreeMap::new();
-    let mut zero_id = 0;
-    for (idx, value) in original_value_order.iter().enumerate() {
-        if *value == 0 {
-            zero_id = idx;
-        }
-        id_to_value.insert(idx, *value);
-    }
-    let mut values: VecDeque<usize> = (0..original_value_order.len()).collect();
-    for id in 0..original_value_order.len() {
-        let (idx, _) = values.iter().find_position(|v| **v == id).unwrap();
-        values.remove(idx);
-        let value = id_to_value[&id];
-        let new_idx = (idx as isize + value).rem_euclid(values.len() as isize) as usize;
-        values.insert(new_idx, id);
-    }
-    let (idx, _) = values.iter().find_position(|v| **v == zero_id).unwrap();
-    Ok(id_to_value[&values[(idx + 1000) % values.len()]]
-        + id_to_value[&values[(idx + 2000) % values.len()]]
-        + id_to_value[&values[(idx + 3000) % values.len()]])
+    let original: Vec<isize> = input.trim().lines().flat_map(str::parse::<isize>).collect();
+    let (mut values, labels, zero_id) = relabel(&original);
+    mix(&mut values, &labels);
+    Ok(extract(values, labels, zero_id))
 }
 
 fn part_two_inner(input: &str) -> Result<isize> {
-    let original_value_order: Vec<isize> = input
+    let original: Vec<isize> = input
         .trim()
         .lines()
         .flat_map(str::parse::<isize>)
         .map(|v| v * 811589153)
         .collect();
+    let (mut values, labels, zero_id) = relabel(&original);
+    for _ in 0..10 {
+        mix(&mut values, &labels);
+    }
+    Ok(extract(values, labels, zero_id))
+}
+
+fn extract(values: VecDeque<usize>, labels: BTreeMap<usize, isize>, zero_id: usize) -> isize {
+    let (idx, _) = values.iter().find_position(|v| **v == zero_id).unwrap();
+    labels[&values[(idx + 1000) % values.len()]]
+        + labels[&values[(idx + 2000) % values.len()]]
+        + labels[&values[(idx + 3000) % values.len()]]
+}
+
+fn mix(values: &mut VecDeque<usize>, labels: &BTreeMap<usize, isize>) {
+    for id in 0..values.len() {
+        let (idx, _) = values.iter().find_position(|v| **v == id).unwrap();
+        values.remove(idx);
+        let value = labels[&id];
+        let new_idx = (idx as isize + value).rem_euclid(values.len() as isize) as usize;
+        values.insert(new_idx, id);
+    }
+}
+
+fn relabel(original: &Vec<isize>) -> (VecDeque<usize>, BTreeMap<usize, isize>, usize) {
     let mut id_to_value = BTreeMap::new();
     let mut zero_id = 0;
-    for (idx, value) in original_value_order.iter().enumerate() {
+    for (idx, value) in original.iter().enumerate() {
         if *value == 0 {
             zero_id = idx;
         }
         id_to_value.insert(idx, *value);
     }
-    let mut values: VecDeque<usize> = (0..original_value_order.len()).collect();
-    for _ in 0..10 {
-        for id in 0..original_value_order.len() {
-            let (idx, _) = values.iter().find_position(|v| **v == id).unwrap();
-            values.remove(idx);
-            let value = id_to_value[&id];
-            let new_idx = (idx as isize + value).rem_euclid(values.len() as isize) as usize;
-            values.insert(new_idx, id);
-        }
-    }
-    let (idx, _) = values.iter().find_position(|v| **v == zero_id).unwrap();
-    Ok(id_to_value[&values[(idx + 1000) % values.len()]]
-        + id_to_value[&values[(idx + 2000) % values.len()]]
-        + id_to_value[&values[(idx + 3000) % values.len()]])
+    let values: VecDeque<usize> = (0..original.len()).collect();
+    (values, id_to_value, zero_id)
 }
 
 #[cfg(test)]

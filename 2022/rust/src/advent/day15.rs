@@ -120,7 +120,11 @@ impl FromStr for SensorReading {
             .wrap_err_with(|| format!("failed to strip beacon prefix for [{}]", line))?;
         let sensor = str::parse(sensor_coords)?;
         let beacon = str::parse(beacon_coords)?;
-        Ok(SensorReading { sensor, beacon, radius: distance(&sensor, &beacon) })
+        Ok(SensorReading {
+            sensor,
+            beacon,
+            radius: distance(&sensor, &beacon),
+        })
     }
 }
 

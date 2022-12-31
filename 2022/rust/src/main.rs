@@ -1,6 +1,7 @@
 #![feature(iter_array_chunks)]
 #![feature(array_windows)]
 #![feature(get_many_mut)]
+#![feature(int_roundings)]
 
 mod advent;
 mod utils;
@@ -115,6 +116,36 @@ fn main() -> Result<()> {
         }
         (16, 2) => {
             advent::day16::part_two()?;
+        }
+        (17, 1) => {
+            advent::day17::part_one()?;
+        }
+        (17, 2) => {
+            advent::day17::part_two()?;
+        }
+        (18, 1) => {
+            advent::day18::part_one()?;
+        }
+        (18, 2) => {
+            advent::day18::part_two()?;
+        }
+        (19, 1) => {
+            advent::day19::part_one()?;
+        }
+        (19, 2) => {
+            advent::day19::part_two()?;
+        }
+        (20, 1) => {
+            advent::day20::part_one()?;
+        }
+        (20, 2) => {
+            advent::day20::part_two()?;
+        }
+        (21, 1) => {
+            advent::day21::part_one()?;
+        }
+        (21, 2) => {
+            advent::day21::part_two()?;
         }
         (d, p) => {
             println!("Day {}, Part {} is not yet implemented.", d, p);

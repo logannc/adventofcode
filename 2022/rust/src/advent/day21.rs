@@ -157,6 +157,6 @@ hmdt: 32
     #[test]
     fn part_two_works() {
         assert_eq!(part_two_inner(TEST_INPUT).unwrap(), 301);
-        assert_eq!(part_two().unwrap(), 0);
+        assert_eq!(part_two().unwrap(), 3952288690726);
     }
 }

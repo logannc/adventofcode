@@ -96,6 +96,6 @@ mod tests {
     #[test]
     fn part_two_works() {
         assert_eq!(part_two_inner(TEST_INPUT).unwrap(), 1623178306);
-        assert_eq!(part_two().unwrap(), 0);
+        assert_eq!(part_two().unwrap(), 6704537992933);
     }
 }

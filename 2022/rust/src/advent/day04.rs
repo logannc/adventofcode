@@ -11,8 +11,8 @@ impl FromStr for Assignment {
     type Err = Report;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let (start, end) = s
-            .split_once("-")
-            .ok_or_else(|| Report::msg(format!("Failed to split [{}]", s)))?;
+            .split_once('-')
+            .ok_or_else(|| Report::msg(format!("Failed to split [{s}]")))?;
         let start = str::parse(start)?;
         let end = str::parse(end)?;
         Ok(Assignment { start, end })
@@ -39,8 +39,8 @@ impl FromStr for Pair {
     type Err = Report;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let (left, right) = s
-            .split_once(",")
-            .ok_or_else(|| Report::msg(format!("Failed to split [{}]", s)))?;
+            .split_once(',')
+            .ok_or_else(|| Report::msg(format!("Failed to split [{s}]")))?;
         let left: Assignment = str::parse(left)?;
         let right: Assignment = str::parse(right)?;
         Ok(Pair { left, right })
@@ -62,7 +62,7 @@ pub fn part_one() -> Result<u32> {
     let content = fs::read_to_string(input_path)?;
     let assignments = parse_assignments(&content)?;
     let result = part_one_inner(assignments);
-    println!("{}", result);
+    println!("{result}");
     Ok(result)
 }
 
@@ -71,12 +71,12 @@ pub fn part_two() -> Result<u32> {
     let content = fs::read_to_string(input_path)?;
     let assignments = parse_assignments(&content)?;
     let result = part_two_inner(assignments);
-    println!("{}", result);
+    println!("{result}");
     Ok(result)
 }
 
 fn parse_assignments(input: &str) -> Result<Vec<Pair>> {
-    input.trim().lines().map(|line| str::parse(line)).collect()
+    input.trim().lines().map(str::parse).collect()
 }
 
 fn part_one_inner(assignments: Vec<Pair>) -> u32 {

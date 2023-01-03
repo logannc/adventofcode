@@ -7,7 +7,7 @@ pub fn part_one() -> Result<usize> {
     let input_path = problem_input_path(14, Some(1));
     let content = fs::read_to_string(input_path)?;
     let result = part_one_inner(&content)?;
-    println!("{}", result);
+    println!("{result}");
     Ok(result)
 }
 
@@ -15,7 +15,7 @@ pub fn part_two() -> Result<usize> {
     let input_path = problem_input_path(14, Some(1));
     let content = fs::read_to_string(input_path)?;
     let result = part_two_inner(&content)?;
-    println!("{}", result);
+    println!("{result}");
     Ok(result)
 }
 
@@ -63,7 +63,7 @@ impl Path {
             .clone()
             .into_iter()
             .tuple_windows()
-            .map(|(left, right)| {
+            .flat_map(|(left, right)| {
                 let diff = (right.0 - left.0, right.1 - left.1);
                 let unit_vector = (diff.0.signum(), diff.1.signum());
                 let times = diff.0.abs().max(diff.1.abs());
@@ -75,7 +75,6 @@ impl Path {
                 }
                 points.into_iter()
             })
-            .flatten()
     }
 }
 
@@ -118,10 +117,8 @@ impl Grid {
     const SAND_SPOUT: (isize, isize) = (500, 0);
 
     fn _contains(&self, key: &(isize, isize), with_floor: bool) -> bool {
-        if with_floor {
-            if key.1 >= self.bounds.1 .1 + 2 {
-                return true;
-            }
+        if with_floor && key.1 >= self.bounds.1 .1 + 2 {
+            return true;
         }
         self.contents.contains_key(key)
     }
@@ -132,7 +129,7 @@ impl Grid {
             if self._contains(&(x, y + 1), with_floor) {
                 if self._contains(&(x - 1, y + 1), with_floor) {
                     if self._contains(&(x + 1, y + 1), with_floor) {
-                        if let Some(_) = self.contents.insert((x, y), Material::Sand) {
+                        if self.contents.insert((x, y), Material::Sand).is_some() {
                             return Ok(false);
                         } else {
                             return Ok(true);

@@ -18,10 +18,9 @@ impl FromStr for Stacks {
             stacks.push(Vec::new());
         }
         for line in lines {
-            for (i, chars) in line.chars().chunks(4).into_iter().enumerate() {
-                match chars.filter(|c| c.is_alphabetic()).next() {
-                    Some(c) => stacks[i].push(c),
-                    None => {}
+            for (i, mut chars) in line.chars().chunks(4).into_iter().enumerate() {
+                if let Some(c) = chars.find(|c| c.is_alphabetic()) {
+                    stacks[i].push(c)
                 }
             }
         }
@@ -34,9 +33,9 @@ impl Stacks {
         let [from, to] = self
             .stacks
             .get_many_mut([command.from, command.to])
-            .wrap_err_with(|| Report::msg(format!("failed to get the from/to vectors")))?;
+            .wrap_err_with(|| Report::msg("failed to get the from/to vectors".to_string()))?;
         for _ in 0..command.amt {
-            let tmp = from.pop().wrap_err_with(|| Report::msg(format!("")))?;
+            let tmp = from.pop().wrap_err_with(|| Report::msg(String::new()))?;
             to.push(tmp);
         }
         Ok(())
@@ -46,7 +45,7 @@ impl Stacks {
         let [from, to] = self
             .stacks
             .get_many_mut([command.from, command.to])
-            .wrap_err_with(|| Report::msg(format!("failed to get the from/to vectors")))?;
+            .wrap_err_with(|| Report::msg("failed to get the from/to vectors".to_string()))?;
         let moving = from.split_off(from.len() - command.amt);
         to.extend(moving);
         Ok(())
@@ -71,7 +70,7 @@ impl FromStr for Command {
             .collect();
         let [amt, from, to]: [usize; 3] = command_parts
             .try_into()
-            .map_err(|o| Report::msg(format!("incorrect number of parts [{:?}]", o)))?;
+            .map_err(|o| Report::msg(format!("incorrect number of parts [{o:?}]")))?;
         Ok(Command {
             from: from - 1,
             to: to - 1,
@@ -100,7 +99,7 @@ pub fn part_one() -> Result<String> {
     let content = fs::read_to_string(input_path)?;
     let (stacks, commands) = parse_input(&content)?;
     let result = part_one_inner(stacks, commands)?;
-    println!("{}", result);
+    println!("{result}");
     Ok(result)
 }
 
@@ -109,7 +108,7 @@ pub fn part_two() -> Result<String> {
     let content = fs::read_to_string(input_path)?;
     let (stacks, commands) = parse_input(&content)?;
     let result = part_two_inner(stacks, commands)?;
-    println!("{}", result);
+    println!("{result}");
     Ok(result)
 }
 
@@ -136,9 +135,9 @@ fn part_two_inner(mut stacks: Stacks, commands: Commands) -> Result<String> {
 }
 
 fn parse_input(input: &str) -> Result<(Stacks, Commands)> {
-    let (stack_input, command_input) = input
-        .split_once("\n\n")
-        .wrap_err_with(|| Report::msg(format!("input didn't split by double newline correctly")))?;
+    let (stack_input, command_input) = input.split_once("\n\n").wrap_err_with(|| {
+        Report::msg("input didn't split by double newline correctly".to_string())
+    })?;
     let stacks = str::parse(stack_input)?;
     let commands = str::parse(command_input)?;
     Ok((stacks, commands))

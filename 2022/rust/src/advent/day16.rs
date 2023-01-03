@@ -12,7 +12,7 @@ pub fn part_one() -> Result<usize> {
     let input_path = problem_input_path(16, Some(1));
     let content = fs::read_to_string(input_path)?;
     let result = part_one_inner(&content)?;
-    println!("{}", result);
+    println!("{result}");
     Ok(result)
 }
 
@@ -20,7 +20,7 @@ pub fn part_two() -> Result<usize> {
     let input_path = problem_input_path(16, Some(1));
     let content = fs::read_to_string(input_path)?;
     let result = part_two_inner(&content)?;
-    println!("{}", result);
+    println!("{result}");
     Ok(result)
 }
 
@@ -35,7 +35,7 @@ fn part_one_inner(input: &str) -> Result<usize> {
     let initial = Path {
         location: "AA".to_owned(),
         time_remaining: 30,
-        unvisited: valve_system.flow_rates.clone(),
+        unvisited: valve_system.flow_rates,
         pressure: 0,
         released: 0,
     };
@@ -124,7 +124,7 @@ fn part_two_inner(input: &str) -> Result<usize> {
     for (human_path, human_value) in complete_paths.iter() {
         for (elephant_path, elephant_value) in complete_paths.iter() {
             let released = human_value + elephant_value;
-            if released > best && human_path.is_disjoint(&elephant_path) {
+            if released > best && human_path.is_disjoint(elephant_path) {
                 best = released;
             }
         }
@@ -180,6 +180,7 @@ fn best_path(
     unreachable!()
 }
 
+#[allow(clippy::derive_hash_xor_eq)]
 #[derive(Debug, Clone, Eq, Hash)]
 struct Path {
     location: String,
@@ -241,6 +242,7 @@ impl Ord for Path {
     }
 }
 
+#[allow(clippy::derive_hash_xor_eq)]
 #[derive(Debug, Clone, Derivative, Hash)]
 #[derivative(PartialEq, Eq, PartialOrd, Ord)]
 struct Valve {
@@ -320,6 +322,8 @@ Valve JJ has flow rate=21; tunnel leads to valve II
 
     #[test]
     fn part_two_works() {
+        // See TODO above. The real input cannot visit all valves so I omitted the empty target case.
+        // But the test input is easy to visit all so the solver just returns the best single route.
         assert_eq!(part_two_inner(TEST_INPUT).unwrap(), 1707);
         assert_eq!(part_two().unwrap(), 2591);
     }

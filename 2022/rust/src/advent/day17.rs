@@ -7,7 +7,7 @@ pub fn part_one() -> Result<i128> {
     let input_path = problem_input_path(17, Some(1));
     let content = fs::read_to_string(input_path)?;
     let result = part_one_inner(&content)?;
-    println!("{}", result);
+    println!("{result}");
     Ok(result)
 }
 
@@ -15,7 +15,7 @@ pub fn part_two() -> Result<i128> {
     let input_path = problem_input_path(17, Some(1));
     let content = fs::read_to_string(input_path)?;
     let result = part_two_inner(&content)?;
-    println!("{}", result);
+    println!("{result}");
     Ok(result)
 }
 
@@ -53,7 +53,7 @@ fn part_two_inner(input: &str) -> Result<i128> {
         {
             let elapsed = count - prior_count;
             if elapsed > 0 {
-                println!("Found a cycle! {} to {}", prior_count, count);
+                println!("Found a cycle! {prior_count} to {count}");
                 let remaining = dbg!(GOAL - count);
                 let fast_forward_cycles = dbg!(remaining / elapsed);
                 let growth = dbg!(tunnel.highest - prior_highest);
@@ -82,7 +82,7 @@ fn parse_input(input: &str) -> Vec<Direction> {
             Ok(match c {
                 '<' => Direction::Left,
                 '>' => Direction::Right,
-                _ => return Err(Report::msg(format!("Bad character [{}]", c))),
+                _ => return Err(Report::msg(format!("Bad character [{c}]"))),
             })
         })
         .collect();
@@ -140,7 +140,7 @@ struct Tunnel {
 impl Tunnel {
     fn add_piece(&mut self, piece: Vec<u8>) {
         self.piece = piece;
-        self.piece_bottom = (self.highest + 4 as i128) as usize;
+        self.piece_bottom = (self.highest + 4_i128) as usize;
         let extra_rows = (self.piece_bottom + self.piece.len()).saturating_sub(self.rows.len());
         for _ in 0..extra_rows {
             self.rows.push(0);
@@ -182,7 +182,7 @@ impl Tunnel {
                     &mut self.rows[self.piece_bottom..self.piece_bottom + self.piece.len() + 1],
                 )
             {
-                *tunnel_row = *tunnel_row | piece_row;
+                *tunnel_row |= piece_row;
             }
             self.highest = i128::max(
                 self.highest,
@@ -222,10 +222,10 @@ impl Display for Tunnel {
             if self.piece_bottom <= i && i < self.piece_bottom + self.piece.len() {
                 let idx = self.piece.len() - (i - self.piece_bottom) - 1;
                 if let Some(piece_row) = self.piece.get(idx) {
-                    copy = copy | piece_row;
+                    copy |= piece_row;
                 }
             }
-            row_strs.push(format!("{:0>7b}", copy));
+            row_strs.push(format!("{copy:0>7b}"));
         }
         let tunnel = row_strs.into_iter().rev().join("\n");
         f.write_str(&tunnel)

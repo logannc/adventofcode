@@ -7,7 +7,7 @@ pub fn part_one() -> Result<i32> {
     let input_path = problem_input_path(10, Some(1));
     let content = fs::read_to_string(input_path)?;
     let result = part_one_inner(&content)?;
-    println!("{}", result);
+    println!("{result}");
     Ok(result)
 }
 
@@ -15,7 +15,7 @@ pub fn part_two() -> Result<String> {
     let input_path = problem_input_path(10, Some(1));
     let content = fs::read_to_string(input_path)?;
     let result = part_two_inner(&content)?;
-    println!("{}", result);
+    println!("{result}");
     Ok(result)
 }
 
@@ -127,7 +127,7 @@ impl CPU {
 
 fn parse_instructions(input: &str) -> Result<Vec<Op>> {
     let ops: Result<Vec<Op>, _> = input.trim().lines().map(str::parse).collect();
-    Ok(ops?)
+    ops
 }
 
 fn part_one_inner(input: &str) -> Result<i32> {

@@ -8,7 +8,7 @@ pub fn part_one() -> Result<usize> {
     let input_path = problem_input_path(9, Some(1));
     let content = fs::read_to_string(input_path)?;
     let result = part_one_inner(&content)?;
-    println!("{}", result);
+    println!("{result}");
     Ok(result)
 }
 
@@ -16,7 +16,7 @@ pub fn part_two() -> Result<usize> {
     let input_path = problem_input_path(9, Some(1));
     let content = fs::read_to_string(input_path)?;
     let result = part_two_inner(&content)?;
-    println!("{}", result);
+    println!("{result}");
     Ok(result)
 }
 
@@ -47,8 +47,8 @@ impl FromStr for Command {
     type Err = Report;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let (direction, length) = s
-            .split_once(" ")
-            .wrap_err_with(|| Report::msg(format!("failed to split [{}]", s)))?;
+            .split_once(' ')
+            .wrap_err_with(|| Report::msg(format!("failed to split [{s}]")))?;
         let length = str::parse(length)?;
         match direction {
             "R" => Ok(Command {
@@ -67,7 +67,7 @@ impl FromStr for Command {
                 dir: Direction::Down,
                 length,
             }),
-            other => Err(Report::msg(format!("unknown direction [{}]", other))),
+            other => Err(Report::msg(format!("unknown direction [{other}]"))),
         }
     }
 }

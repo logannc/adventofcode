@@ -14,7 +14,7 @@ pub fn part_two() -> Result<usize> {
     let input_path = problem_input_path(18, Some(1));
     let content = fs::read_to_string(input_path)?;
     let result = part_two_inner(&content)?;
-    println!("{}", result);
+    println!("{result}");
     Ok(result)
 }
 
@@ -22,8 +22,7 @@ fn part_one_inner(input: &str) -> Result<usize> {
     let points = parse_input(input);
     Ok(points
         .iter()
-        .map(|point| neighbors(point))
-        .flatten()
+        .flat_map(neighbors)
         .filter(|p| !points.contains(p))
         .count())
 }
@@ -33,8 +32,7 @@ fn part_two_inner(input: &str) -> Result<usize> {
     let exterior = find_exterior(&points);
     Ok(points
         .iter()
-        .map(|point| neighbors(point))
-        .flatten()
+        .flat_map(neighbors)
         .filter(|p| !points.contains(p) && exterior.contains(p))
         .count())
 }

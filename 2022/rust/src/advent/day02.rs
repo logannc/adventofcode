@@ -84,7 +84,7 @@ pub fn part_one() -> Result<u32> {
     let content = fs::read_to_string(input_path)?;
     let strategy = parse_strategy_one(&content)?;
     let result = part_one_inner(strategy);
-    println!("{}", result);
+    println!("{result}");
     Ok(result)
 }
 
@@ -92,23 +92,23 @@ pub fn part_two() -> Result<u32> {
     let input_path = problem_input_path(2, Some(1));
     let content = fs::read_to_string(input_path)?;
     let result = part_two_inner(&content)?;
-    println!("{}", result);
+    println!("{result}");
     Ok(result)
 }
 
 fn parse_strategy_one(input: &str) -> Result<Strategy> {
     let mut strategy = Vec::new();
-    for [opponent, mine] in input.trim().split_whitespace().array_chunks() {
+    for [opponent, mine] in input.split_whitespace().array_chunks() {
         strategy.push((
-            str::parse(opponent).wrap_err_with(|| format!("failed to parse [{}]", opponent))?,
-            str::parse(mine).wrap_err_with(|| format!("failed to parse [{}]", mine))?,
+            str::parse(opponent).wrap_err_with(|| format!("failed to parse [{opponent}]"))?,
+            str::parse(mine).wrap_err_with(|| format!("failed to parse [{mine}]"))?,
         ));
     }
     Ok(strategy)
 }
 
 fn resolve_round(opponent: Shape, mine: Shape) -> u32 {
-    let move_score: u32 = mine.clone().into();
+    let move_score: u32 = mine.into();
     let result_score: u32 = match PartialOrd::partial_cmp(&mine, &opponent).unwrap() {
         std::cmp::Ordering::Greater => 6,
         std::cmp::Ordering::Equal => 3,
@@ -138,11 +138,11 @@ fn shape_from_outcome(opponent: Shape, outcome: Outcome) -> Shape {
 
 fn part_two_inner(input: &str) -> Result<u32> {
     let mut score = 0;
-    for [opponent, mine] in input.trim().split_whitespace().array_chunks() {
+    for [opponent, mine] in input.split_whitespace().array_chunks() {
         let opponent_shape: Shape =
-            str::parse(opponent).wrap_err_with(|| format!("failed to parse [{}]", opponent))?;
+            str::parse(opponent).wrap_err_with(|| format!("failed to parse [{opponent}]"))?;
         let desired_outcome: Outcome =
-            str::parse(mine).wrap_err_with(|| format!("failed to parse [{}]", mine))?;
+            str::parse(mine).wrap_err_with(|| format!("failed to parse [{mine}]"))?;
         let desired_shape = shape_from_outcome(opponent_shape, desired_outcome);
         let outcome_score: u32 = desired_outcome.into();
         let shape_score: u32 = desired_shape.into();

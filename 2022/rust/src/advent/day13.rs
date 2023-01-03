@@ -6,7 +6,7 @@ pub fn part_one() -> Result<usize> {
     let input_path = problem_input_path(13, Some(1));
     let content = fs::read_to_string(input_path)?;
     let result = part_one_inner(&content)?;
-    println!("{}", result);
+    println!("{result}");
     Ok(result)
 }
 
@@ -14,7 +14,7 @@ pub fn part_two() -> Result<usize> {
     let input_path = problem_input_path(13, Some(1));
     let content = fs::read_to_string(input_path)?;
     let result = part_two_inner(&content)?;
-    println!("{}", result);
+    println!("{result}");
     Ok(result)
 }
 
@@ -23,7 +23,7 @@ fn part_one_inner(input: &str) -> Result<usize> {
     let sum = pairs
         .into_iter()
         .map(|pair| {
-            let (left, right) = pair.split_once("\n").unwrap();
+            let (left, right) = pair.split_once('\n').unwrap();
             let left: SpecialLists = str::parse(left).unwrap();
             let right: SpecialLists = str::parse(right).unwrap();
             left <= right
@@ -42,11 +42,10 @@ fn part_two_inner(input: &str) -> Result<usize> {
         .trim()
         .split("\n\n")
         .into_iter()
-        .map(|pair| {
+        .flat_map(|pair| {
             pair.lines()
                 .map(|line| str::parse::<SpecialLists>(line).unwrap())
         })
-        .flatten()
         .collect();
     lists.push(left_decoder.clone());
     lists.push(right_decoder.clone());
@@ -65,19 +64,19 @@ enum SpecialLists {
 impl Debug for SpecialLists {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            SpecialLists::Number(num) => f.write_str(&format!("{}", num)),
+            SpecialLists::Number(num) => f.write_str(&format!("{num}")),
             SpecialLists::List(list) => f.write_str(&format!("{:?}", &list)),
         }
     }
 }
 
-fn parse_item<'a>(mut input: &'a str) -> Result<(&'a str, SpecialLists)> {
-    let item: String = input.chars().take_while(|c| c.is_digit(10)).collect();
+fn parse_item(mut input: &str) -> Result<(&str, SpecialLists)> {
+    let item: String = input.chars().take_while(|c| c.is_ascii_digit()).collect();
     (_, input) = input.split_at(item.len());
     Ok((input, SpecialLists::Number(str::parse(&item)?)))
 }
 
-fn parse_list<'a>(mut input: &'a str) -> Result<(&'a str, SpecialLists)> {
+fn parse_list(mut input: &str) -> Result<(&str, SpecialLists)> {
     input = input.strip_prefix('[').unwrap();
     let mut items = Vec::new();
     loop {

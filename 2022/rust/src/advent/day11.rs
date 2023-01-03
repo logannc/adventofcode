@@ -1,13 +1,13 @@
 use crate::utils::*;
 use eyre::{ContextCompat, Report, Result};
 use itertools::Itertools;
-use std::{fs, mem, str::FromStr};
+use std::{fs, str::FromStr};
 
 pub fn part_one() -> Result<usize> {
     let input_path = problem_input_path(11, Some(1));
     let content = fs::read_to_string(input_path)?;
     let result = part_one_inner(&content)?;
-    println!("{}", result);
+    println!("{result}");
     Ok(result)
 }
 
@@ -15,7 +15,7 @@ pub fn part_two() -> Result<usize> {
     let input_path = problem_input_path(11, Some(1));
     let content = fs::read_to_string(input_path)?;
     let result = part_two_inner(&content)?;
-    println!("{}", result);
+    println!("{result}");
     Ok(result)
 }
 
@@ -56,7 +56,7 @@ impl FromStr for Argument {
                 if s == "old" {
                     Ok(Argument::Old)
                 } else {
-                    Err(Report::msg(format!("unknown argument [{}]", s)))
+                    Err(Report::msg(format!("unknown argument [{s}]")))
                 }
             }
         }
@@ -93,7 +93,7 @@ impl FromStr for Operation {
         match op {
             "+" => Ok(Operation::Add(arg)),
             "*" => Ok(Operation::Multiply(arg)),
-            _ => Err(Report::msg(format!("unknown op [{}] from [{}]", op, s))),
+            _ => Err(Report::msg(format!("unknown op [{op}] from [{s}]"))),
         }
     }
 }
@@ -115,12 +115,11 @@ impl FromStr for Monkey {
         let item_line = lines.next().unwrap();
         let (_, items) = item_line.split_once(':').wrap_err_with(|| {
             Report::msg(format!(
-                "Failed to split on : for item line [{}]",
-                item_line
+                "Failed to split on : for item line [{item_line}]"
             ))
         })?;
         let items: Result<Vec<usize>, _> = items
-            .split(",")
+            .split(',')
             .into_iter()
             .map(|item| str::parse(item.trim()))
             .collect();
@@ -156,7 +155,7 @@ impl Barrel {
     fn simulate_round<const DIMINISH: bool>(&mut self) {
         let p: usize = self.monkeys.iter().map(|m| m.test).product();
         for monkey_idx in 0..self.monkeys.len() {
-            let items = mem::replace(&mut self.monkeys[monkey_idx].items, Vec::new());
+            let items = std::mem::take(&mut self.monkeys[monkey_idx].items);
             for item in items {
                 self.monkeys[monkey_idx].inspection_count += 1;
                 let worry = self.monkeys[monkey_idx].operation.apply(item);

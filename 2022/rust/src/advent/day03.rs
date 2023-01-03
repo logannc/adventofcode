@@ -11,7 +11,7 @@ impl Rucksack {
     fn shared_item(&self) -> char {
         let left_set: BTreeSet<char> = self.left.items.keys().copied().collect();
         let right_set: BTreeSet<char> = self.right.items.keys().copied().collect();
-        left_set.intersection(&right_set).next().unwrap().clone()
+        *left_set.intersection(&right_set).next().unwrap()
     }
 
     fn item_set(&self) -> BTreeSet<char> {
@@ -34,7 +34,7 @@ impl Priority for char {
                 (self as u32) - 96
             }
         } else {
-            panic!("expected only alphabetic characters! found {}", self)
+            panic!("expected only alphabetic characters! found {self}")
         }
     }
 }
@@ -44,7 +44,7 @@ pub fn part_one() -> Result<u32> {
     let content = fs::read_to_string(input_path)?;
     let rucksacks = parse_rucksacks(&content);
     let result = part_one_inner(rucksacks);
-    println!("{}", result);
+    println!("{result}");
     Ok(result)
 }
 
@@ -53,7 +53,7 @@ pub fn part_two() -> Result<u32> {
     let content = fs::read_to_string(input_path)?;
     let rucksacks = parse_rucksacks(&content);
     let result = part_two_inner(rucksacks);
-    println!("{}", result);
+    println!("{result}");
     Ok(result)
 }
 
@@ -87,14 +87,13 @@ fn part_two_inner(rucksacks: Vec<Rucksack>) -> u32 {
         .chunks(3)
         .map(|group| {
             group
-                .into_iter()
+                .iter()
                 .map(Rucksack::item_set)
                 .reduce(|a, b| a.intersection(&b).copied().collect::<BTreeSet<char>>())
                 .unwrap()
                 .into_iter()
                 .next()
                 .unwrap()
-                .clone()
                 .priority()
         })
         .sum()

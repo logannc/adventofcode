@@ -26,15 +26,12 @@ impl Directory {
 
     fn iter<'a>(&'a self) -> Box<dyn Iterator<Item = &FileSystemEntry> + 'a> {
         Box::new(
-            self.contents.iter().chain(
-                self.contents
-                    .iter()
-                    .map(|fse| match fse {
-                        FileSystemEntry::Directory(d) => d.iter(),
-                        FileSystemEntry::File(_) => Box::new(once(fse)),
-                    })
-                    .flatten(),
-            ),
+            self.contents
+                .iter()
+                .chain(self.contents.iter().flat_map(|fse| match fse {
+                    FileSystemEntry::Directory(d) => d.iter(),
+                    FileSystemEntry::File(_) => Box::new(once(fse)),
+                })),
         )
     }
 }
@@ -111,10 +108,9 @@ impl FromStr for LSLine {
                     .into(),
             ))
         } else {
-            let (size, name) = s.split_once(" ").wrap_err_with(|| {
+            let (size, name) = s.split_once(' ').wrap_err_with(|| {
                 Report::msg(format!(
-                    "expected 'number filename', but failed to split on the space for [{}]",
-                    s
+                    "expected 'number filename', but failed to split on the space for [{s}]"
                 ))
             })?;
             Ok(LSLine::File(str::parse(size)?, name.into()))
@@ -122,10 +118,10 @@ impl FromStr for LSLine {
     }
 }
 
-fn parse_inner<'a>(
+fn parse_inner(
     mut d: Directory,
-    mut input: Peekable<Lines<'a>>,
-) -> Result<(Directory, Peekable<Lines<'a>>)> {
+    mut input: Peekable<Lines<'_>>,
+) -> Result<(Directory, Peekable<Lines<'_>>)> {
     while let Some(line) = input.peek() {
         if line.starts_with(CDLine::PREFIX) {
             if line.ends_with("..") {
@@ -146,20 +142,19 @@ fn parse_inner<'a>(
     Ok((d, input))
 }
 
-fn parse_ls<'a>(
+fn parse_ls(
     mut d: Directory,
-    mut input: Peekable<Lines<'a>>,
-) -> Result<(Directory, Peekable<Lines<'a>>)> {
+    mut input: Peekable<Lines<'_>>,
+) -> Result<(Directory, Peekable<Lines<'_>>)> {
     input
         .next()
         .expect("callers guarantee the first line is $ ls");
-    while let Some(line) = input.next_if(|line| !line.starts_with("$")) {
+    while let Some(line) = input.next_if(|line| !line.starts_with('$')) {
         let ls_line: LSLine = str::parse(line)?;
         match ls_line {
-            LSLine::File(size, name) => d.contents.push(FileSystemEntry::File(File {
-                _name: name.into(),
-                size,
-            })),
+            LSLine::File(size, name) => d
+                .contents
+                .push(FileSystemEntry::File(File { _name: name, size })),
             // We ignore dirs because we add them after we cd into them
             // we assume the order of the vec for the directory contents doesn't matter. if it does we can alphabetize it later.
             LSLine::Dir(_) => {}
@@ -168,13 +163,13 @@ fn parse_ls<'a>(
     Ok((d, input))
 }
 
-fn parse_cd<'a>(mut input: Peekable<Lines<'a>>) -> Result<(Directory, Peekable<Lines<'a>>)> {
+fn parse_cd(mut input: Peekable<Lines<'_>>) -> Result<(Directory, Peekable<Lines<'_>>)> {
     let cd_line: CDLine = str::parse(
         input
             .next()
             .expect("callers guarantee the first line is `$ cd foo`"),
     )?;
-    let d = Directory::named(cd_line.0.into());
+    let d = Directory::named(cd_line.0);
     let (d, input) = parse_inner(d, input)?;
     Ok((d, input))
 }
@@ -183,7 +178,7 @@ pub fn part_one() -> Result<usize> {
     let input_path = problem_input_path(7, Some(1));
     let content = fs::read_to_string(input_path)?;
     let result = part_one_inner(&content)?;
-    println!("{}", result);
+    println!("{result}");
     Ok(result)
 }
 
@@ -191,7 +186,7 @@ pub fn part_two() -> Result<usize> {
     let input_path = problem_input_path(7, Some(1));
     let content = fs::read_to_string(input_path)?;
     let result = part_two_inner(&content)?;
-    println!("{}", result);
+    println!("{result}");
     Ok(result)
 }
 

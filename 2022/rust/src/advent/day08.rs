@@ -49,8 +49,7 @@ impl VisibilityGrid {
     fn items(self) -> impl Iterator<Item = (u8, bool)> {
         self.content
             .into_iter()
-            .map(|row| row.into_iter())
-            .flatten()
+            .flat_map(|row| row.into_iter())
     }
 }
 
@@ -80,12 +79,11 @@ impl SightGrid {
         let columns = self.content[0].len();
         (0..rows)
             .into_iter()
-            .map(move |row_idx| {
+            .flat_map(move |row_idx| {
                 (0..columns)
                     .into_iter()
                     .map(move |col_idx| (row_idx, col_idx))
             })
-            .flatten()
     }
 
     fn cardinal_idx_generator(
@@ -113,7 +111,7 @@ pub fn part_one() -> Result<usize> {
     let input_path = problem_input_path(8, Some(1));
     let content = fs::read_to_string(input_path)?;
     let result = part_one_inner(&content)?;
-    println!("{}", result);
+    println!("{result}");
     Ok(result)
 }
 
@@ -121,7 +119,7 @@ pub fn part_two() -> Result<u32> {
     let input_path = problem_input_path(8, Some(1));
     let content = fs::read_to_string(input_path)?;
     let result = part_two_inner(&content)?;
-    println!("{}", result);
+    println!("{result}");
     Ok(result)
 }
 

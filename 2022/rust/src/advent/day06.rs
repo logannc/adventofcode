@@ -7,7 +7,7 @@ pub fn part_one() -> Result<usize> {
     let input_path = problem_input_path(6, Some(1));
     let content = fs::read_to_string(input_path)?;
     let result = solve::<4>(&content);
-    println!("{}", result);
+    println!("{result}");
     Ok(result)
 }
 
@@ -15,7 +15,7 @@ pub fn part_two() -> Result<usize> {
     let input_path = problem_input_path(6, Some(1));
     let content = fs::read_to_string(input_path)?;
     let result = solve::<14>(&content);
-    println!("{}", result);
+    println!("{result}");
     Ok(result)
 }
 
@@ -26,9 +26,7 @@ fn solve<const N: usize>(input: &str) -> usize {
     input
         .as_bytes()
         .windows(N)
-        .enumerate()
-        .filter(|(_, w)| w.iter().all_unique())
-        .next()
+        .enumerate().find(|(_, w)| w.iter().all_unique())
         .unwrap()
         .0
         + N

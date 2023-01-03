@@ -12,7 +12,7 @@ pub fn part_one() -> Result<u32> {
     let content = fs::read_to_string(input_path)?;
     let caravan = parse_caravan(&content)?;
     let result = part_one_inner(caravan);
-    println!("{}", result);
+    println!("{result}");
     Ok(result)
 }
 
@@ -21,7 +21,7 @@ pub fn part_two() -> Result<u32> {
     let content = fs::read_to_string(input_path)?;
     let caravan = parse_caravan(&content)?;
     let result = part_two_inner(caravan);
-    println!("{}", result);
+    println!("{result}");
     Ok(result)
 }
 
@@ -32,12 +32,12 @@ fn parse_caravan(input: &str) -> Result<Caravan> {
         .map(|group| {
             group
                 .trim()
-                .split("\n")
-                .map(|s| str::parse(s).wrap_err_with(|| format!("Failed to parse [{}]", s)))
+                .split('\n')
+                .map(|s| str::parse(s).wrap_err_with(|| format!("Failed to parse [{s}]")))
                 .collect()
         })
         .collect();
-    caravan.map_err(|e| e.into())
+    caravan
 }
 
 fn part_one_inner(caravan: Caravan) -> u32 {

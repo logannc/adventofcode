@@ -148,10 +148,10 @@ fn main() -> Result<()> {
             advent::day21::part_two()?;
         }
         (d, p) => {
-            println!("Day {}, Part {} is not yet implemented.", d, p);
+            println!("Day {d}, Part {p} is not yet implemented.");
         }
     }
     let elapsed = start.elapsed();
-    println!("Elapsed: {:?}", elapsed);
+    println!("Elapsed: {elapsed:?}");
     Ok(())
 }

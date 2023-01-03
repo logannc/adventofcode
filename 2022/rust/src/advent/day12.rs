@@ -11,7 +11,7 @@ pub fn part_one() -> Result<usize> {
     let input_path = problem_input_path(12, Some(1));
     let content = fs::read_to_string(input_path)?;
     let result = part_one_inner(&content)?;
-    println!("{}", result);
+    println!("{result}");
     Ok(result)
 }
 
@@ -19,7 +19,7 @@ pub fn part_two() -> Result<usize> {
     let input_path = problem_input_path(12, Some(1));
     let content = fs::read_to_string(input_path)?;
     let result = part_two_inner(&content)?;
-    println!("{}", result);
+    println!("{result}");
     Ok(result)
 }
 

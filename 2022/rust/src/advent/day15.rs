@@ -11,7 +11,7 @@ pub fn part_one() -> Result<usize> {
     let input_path = problem_input_path(15, Some(1));
     let content = fs::read_to_string(input_path)?;
     let result = part_one_inner::<2000000>(&content)?;
-    println!("{}", result);
+    println!("{result}");
     Ok(result)
 }
 
@@ -19,7 +19,7 @@ pub fn part_two() -> Result<isize> {
     let input_path = problem_input_path(15, Some(1));
     let content = fs::read_to_string(input_path)?;
     let result = part_two_inner::<4000000>(&content)?;
-    println!("{}", result);
+    println!("{result}");
     Ok(result)
 }
 
@@ -40,8 +40,8 @@ fn part_one_inner<const Y: isize>(input: &str) -> Result<usize> {
     Ok((min..=max)
         .map(|x| {
             let beacon = Point { x, y: Y };
-            let disqualified = readings.disqualifies_beacon(&beacon, true);
-            disqualified
+
+            readings.disqualifies_beacon(&beacon, true)
         })
         .filter(|b| *b)
         .count())
@@ -52,16 +52,14 @@ fn part_two_inner<const MAX: isize>(input: &str) -> Result<isize> {
     let Point { x, y } = readings
         .0
         .iter()
-        .map(|reading| reading.border())
-        .flatten()
-        .filter(|point| {
+        .flat_map(|reading| reading.border())
+        .find(|point| {
             0 <= point.x
                 && point.x <= MAX
                 && 0 <= point.y
                 && point.y <= MAX
                 && !readings.disqualifies_beacon(point, false)
         })
-        .next()
         .unwrap();
     Ok(x * 4000000 + y)
 }
@@ -69,15 +67,15 @@ fn part_two_inner<const MAX: isize>(input: &str) -> Result<isize> {
 fn _parse_xy(s: &str) -> Result<(isize, isize), Report> {
     let (x, y) = s
         .split_once(',')
-        .wrap_err_with(|| format!("couldn't split [{}]", s))?;
+        .wrap_err_with(|| format!("couldn't split [{s}]"))?;
     let x = str::parse(
         x.strip_prefix("x=")
-            .wrap_err_with(|| format!("failed to strip x= from [{}]", x))?,
+            .wrap_err_with(|| format!("failed to strip x= from [{x}]"))?,
     )?;
     let y = str::parse(
         y.trim()
             .strip_prefix("y=")
-            .wrap_err_with(|| format!("failed to strip y= from [{}]", y))?,
+            .wrap_err_with(|| format!("failed to strip y= from [{y}]"))?,
     )?;
     Ok((x, y))
 }
@@ -111,13 +109,13 @@ impl FromStr for SensorReading {
     fn from_str(line: &str) -> Result<Self, Self::Err> {
         let line = line
             .strip_prefix("Sensor at ")
-            .wrap_err_with(|| format!("failed to strip sensor prefix for [{}]", line))?;
+            .wrap_err_with(|| format!("failed to strip sensor prefix for [{line}]"))?;
         let (sensor_coords, line) = line
             .split_once(':')
-            .wrap_err_with(|| format!("failed to split on ':' for [{}]", line))?;
+            .wrap_err_with(|| format!("failed to split on ':' for [{line}]"))?;
         let beacon_coords = line
             .strip_prefix(" closest beacon is at ")
-            .wrap_err_with(|| format!("failed to strip beacon prefix for [{}]", line))?;
+            .wrap_err_with(|| format!("failed to strip beacon prefix for [{line}]"))?;
         let sensor = str::parse(sensor_coords)?;
         let beacon = str::parse(beacon_coords)?;
         Ok(SensorReading {
@@ -212,10 +210,7 @@ impl SensorReadings {
     fn disqualifies_beacon(&self, beacon: &Point, dont_disqualify_self: bool) -> bool {
         self.0
             .iter()
-            .map(|reading| {
-                let disqualifies = reading.disqualifies_beacon(beacon, dont_disqualify_self);
-                disqualifies
-            })
+            .map(|reading| reading.disqualifies_beacon(beacon, dont_disqualify_self))
             .any(|b| b)
     }
 }
